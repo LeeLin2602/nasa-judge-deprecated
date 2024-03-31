@@ -1,0 +1,5 @@
+#MySQL Parameters
+MYSQL_HOST = r""
+MYSQL_USER = r""
+MYSQL_PSWD = r""
+MYSQL_DB   = r""

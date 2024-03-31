@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  mysqld:
+    image: mysql:latest
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: abc123
+      MYSQL_DATABASE: nasa_judge
+      MYSQL_USER: nasa
+      MYSQL_PASSWORD: abc123
+    networks:
+      docker:
+        ipv4_address: 172.21.21.2
+
+networks:
+  docker:
+    ipam:
+      config:
+        - subnet: 172.21.21.0/24
+
