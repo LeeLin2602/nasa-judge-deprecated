@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from repository import Profile
 from sqlalchemy import create_engine
+from models import wg
 import config
 app = Flask(__name__)
 
@@ -12,10 +13,9 @@ connection_string = (
 SQL_ENGINE = create_engine(connection_string)
 
 profile = Profile(SQL_ENGINE)
-
-profile.add_profile()
-profile.del_profile(1)
+print(profile.add_profile())
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

@@ -16,11 +16,15 @@ class Profile:
             )
             session.add(profile)
             session.commit()
+            profile_id = profile.profile_id
         except Exception as e:
             session.rollback()
             raise e
         finally:
             session.close()
+            return profile_id
+            
+        
 
     def del_profile(self, profile_id):
         session = self.session_factory()
