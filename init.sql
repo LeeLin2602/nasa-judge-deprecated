@@ -1,49 +1,52 @@
 USE `nasa_judge`;
 
--- user Table
-CREATE TABLE user (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     role VARCHAR(255)
 );
 
--- problem Table
-CREATE TABLE problem (
+CREATE TABLE problems (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    is_valid BOOLEAN DEFAULT TRUE,
     problem_name VARCHAR(255),
-    created_time DATETIME,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    start_time DATETIME,
     deadline DATETIME
 );
 
--- submission Table
-CREATE TABLE submission (
+CREATE TABLE submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     problem_id INT,
     submission_score INT,
-    timestamp DATETIME,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (problem_id) REFERENCES problem(id)
+    submit_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (problem_id) REFERENCES problems(id)
 );
 
--- tasks Table
-CREATE TABLE tasks (
+CREATE TABLE subtasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    task_name VARCHAR(255),
-    points_credit INT,
-    user_id INT,
     problem_id INT,
-    is_passed BOOLEAN,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (problem_id) REFERENCES problem(id)
+    task_name VARCHAR(255),
+    points INT,
+    is_valid BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (problem_id) REFERENCES problems(id)
 );
 
--- wireguard_profile Table
-CREATE TABLE wireguard_profile (
+CREATE TABLE wireguard_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    is_valid BOOLEAN,
-    creation_date_time DATETIME,
+    is_valid BOOLEAN DEFAULT TRUE,
+    creation_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE subtaskResult (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    submission_id INT,
+    task_id INT,
+    is_passed BOOLEAN,
+    FOREIGN KEY (submission_id) REFERENCES submissions(id),
+    FOREIGN KEY (task_id) REFERENCES subtasks(id)
+);
