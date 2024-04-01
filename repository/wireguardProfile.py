@@ -23,8 +23,6 @@ class Profile:
         finally:
             session.close()
             return profile_id
-            
-        
 
     def del_profile(self, profile_id):
         session = self.session_factory()
