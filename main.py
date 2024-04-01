@@ -13,7 +13,7 @@ connection_string = (
 SQL_ENGINE = create_engine(connection_string)
 
 profile = Profile(SQL_ENGINE)
-print(profile.add_profile())
+profile.del_profile(profile.add_profile())
 
 
 if __name__ == '__main__':

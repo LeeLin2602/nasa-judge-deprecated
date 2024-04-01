@@ -12,11 +12,11 @@ class Profile:
         session = self.session_factory()
         try:
             profile = db.WireguardProfile(
-                valid=True,
+                is_valid=True,
             )
             session.add(profile)
             session.commit()
-            profile_id = profile.profile_id
+            profile_id = profile.id
         except Exception as e:
             session.rollback()
             raise e
@@ -27,7 +27,7 @@ class Profile:
     def del_profile(self, profile_id):
         session = self.session_factory()
         try:
-            profile = session.query(db.WireguardProfile).filter_by(profile_id=profile_id).first()
+            profile = session.query(db.WireguardProfile).filter_by(id=profile_id).first()
             if profile:
                 profile.valid = False
                 session.commit()
