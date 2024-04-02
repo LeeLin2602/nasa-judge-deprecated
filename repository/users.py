@@ -25,3 +25,15 @@ class Users:
                 }
                 return user_data
             return None
+
+    def query_all_users(self):
+        with managed_session(self.session_factory) as session:
+            users = session.query(db.User).all()
+            user_data = [
+                {
+                    "id": user.id,
+                    "name": user.name,
+                    "role": user.role
+                } for user in users
+            ]
+            return user_data
