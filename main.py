@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
-from repository import Profiles, Users, Problems, Submissions, Subtasks
 from sqlalchemy import create_engine
-from models import wg
-import config
-app = Flask(__name__)
+from flask import Flask
 
+from repository import Profiles, Users, Problems, Submissions, Subtasks
+import config
+
+app = Flask(__name__)
 
 connection_string = (
     f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
@@ -38,4 +38,3 @@ print(subtasks.query_subtask(1))
 
 if __name__ == '__main__':
     app.run(debug=True)
-    

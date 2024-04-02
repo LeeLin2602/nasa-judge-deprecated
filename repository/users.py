@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy.orm import sessionmaker, scoped_session
-
+from sqlalchemy.orm import scoped_session, sessionmaker
+from utils import managed_session
 from models import db
 
 class Users:
@@ -9,31 +8,20 @@ class Users:
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
 
     def add_user(self, name):
-        session = self.session_factory()
-        try:
+        with managed_session(self.session_factory) as session:
             user = session.query(db.User).filter_by(name=name).first()
             if not user:
                 user = db.User(name=name)
-            session.add(user)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
-    
-    def query_user(self, name):
-        session = self.session_factory()
-        try:
-            user = session.query(db.User).filter_by(name=name).first()
-            user_data = {
-                "id": user.id,
-                "name": user.name,
-                "role": user.role
-            }
-            return user_data
-        except Exception as e:
-            raise e
-        finally:
-            session.close()
+                session.add(user)
 
+    def query_user(self, name):
+        with managed_session(self.session_factory) as session:
+            user = session.query(db.User).filter_by(name=name).first()
+            if user:
+                user_data = {
+                    "id": user.id,
+                    "name": user.name,
+                    "role": user.role
+                }
+                return user_data
+            return None
