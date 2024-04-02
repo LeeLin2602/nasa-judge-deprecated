@@ -16,4 +16,4 @@ jobs:
     - name: Lint with pylint
       uses: fylein/python-pylint-github-action@v1
       with:
-        args: pylint ./ --recursive=true
+        args: pylint ./ --recursive=true --rcfile=.pylintrc
