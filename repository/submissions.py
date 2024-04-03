@@ -29,3 +29,31 @@ class Submissions:
                     "submit_time": submission.submit_time
                 }
             return None
+
+    def query_all_submissions(self):
+        with managed_session(self.session_factory) as session:
+            submissions = session.query(db.Submission).all()
+            submission_data = [
+                {
+                    "id": submission.id,
+                    "user_id": submission.user_id,
+                    "problem_id": submission.problem_id,
+                    "submission_score": submission.submission_score,
+                    "submit_time": submission.submit_time
+                } for submission in submissions
+            ]
+            return submission_data
+
+    def query_all_submissions_by_user(self, user_id):
+        with managed_session(self.session_factory) as session:
+            submissions = session.query(db.Submission).filter_by(user_id=user_id).all()
+            submission_data = [
+                {
+                    "id": submission.id,
+                    "user_id": submission.user_id,
+                    "problem_id": submission.problem_id,
+                    "submission_score": submission.submission_score,
+                    "submit_time": submission.submit_time
+                } for submission in submissions
+            ]
+            return submission_data

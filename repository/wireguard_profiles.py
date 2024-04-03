@@ -30,3 +30,15 @@ class Profiles:
                 }
                 return profile_data
             return None
+
+    def query_all_profiles(self):
+        with managed_session(self.session_factory) as session:
+            profiles = session.query(db.WireguardProfile).all()
+            profile_data = [
+                {
+                    "id": profile.id,
+                    "is_valid": profile.is_valid,
+                    "creation_date_time": profile.creation_date_time,
+                } for profile in profiles
+            ]
+            return profile_data
