@@ -63,18 +63,14 @@ class Problems:
             ]
             return problem_data
 
-    def query_problem_subtasks(self, problem_id):
+    def query_subtask(self, problem_id):
         with managed_session(self.session_factory) as session:
-            problem = session.query(db.Problem).filter_by(id=problem_id).first()
-            if problem:
-                task_list = session.query(db.Subtask).filter_by(
-                    problem_id=problem_id, is_valid=1).all()
-                task_data = [
-                    {
-                        "id": task.id,
-                        "task_name": task.task_name,
-                        "points": task.points,
-                    } for task in task_list
-                ]
-                return task_data
-            return None
+            task_list = session.query(db.Subtask).filter_by(problem_id=problem_id, is_valid=1).all()
+            task_data = [
+                {
+                    "id": task.id,
+                    "task_name": task.task_name,
+                    "points": task.points,
+                } for task in task_list
+            ]
+            return task_data

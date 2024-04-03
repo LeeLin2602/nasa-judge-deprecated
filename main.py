@@ -32,9 +32,14 @@ print(submissions.query_submission(1, 1))
 subtasks = Subtasks(SQL_ENGINE)
 subtasks.add_subtask(1, "task1", 100)
 subtasks.add_subtask(1, "task2", 100)
-print(subtasks.query_subtask(1))
 subtasks.del_subtask(1)
-print(subtasks.query_subtask(1))
+
+problems = Problems(SQL_ENGINE)
+problems.add_problems("problem2", "2021-01-01", "2021-01-02")
+print(problems.query_problem("problem2"))
+print(problems.query_all_problems())
+print(problems.query_subtask(1))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
