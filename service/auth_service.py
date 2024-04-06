@@ -24,4 +24,23 @@ class AuthService:
         }
 
         token = jwt.encode(payload, self.screct, algorithm="HS256")
+        print(token)
         return token
+
+    def authenticate_token(self, payload):
+        try:
+            if not payload:
+                raise Exception("Token is empty")
+            try:
+                payload = jwt.decode(payload, self.screct, algorithms=["HS256"])
+            except Exception as e:
+                self.logger.error(f"Failed to decode token: {e}")
+                return None
+            user = self.users.query_user(payload['email'])
+            if not user:
+                self.logger.error(f"User not found: {payload['email']}")
+                return None
+            return user
+        except Exception as e:
+            self.logger.error(f"Failed to authenticate token: {e}")
+            return None
