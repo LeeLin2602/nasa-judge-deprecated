@@ -1,6 +1,8 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from utils import managed_session
 from models import db
+
 
 class Subtasks:
     def __init__(self, sql_engine):

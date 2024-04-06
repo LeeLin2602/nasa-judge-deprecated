@@ -1,6 +1,7 @@
 import logging
 from contextlib import contextmanager
 
+
 @contextmanager
 def managed_session(session_factory):
     session = session_factory()

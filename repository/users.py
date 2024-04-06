@@ -1,6 +1,8 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from utils import managed_session
 from models import db
+
 
 class Users:
     def __init__(self, sql_engine):
@@ -18,11 +20,7 @@ class Users:
         with managed_session(self.session_factory) as session:
             user = session.query(db.User).filter_by(name=name).first()
             if user:
-                user_data = {
-                    "id": user.id,
-                    "name": user.name,
-                    "role": user.role
-                }
+                user_data = {"id": user.id, "name": user.name, "role": user.role}
                 return user_data
             return None
 
@@ -30,10 +28,6 @@ class Users:
         with managed_session(self.session_factory) as session:
             users = session.query(db.User).all()
             user_data = [
-                {
-                    "id": user.id,
-                    "name": user.name,
-                    "role": user.role
-                } for user in users
+                {"id": user.id, "name": user.name, "role": user.role} for user in users
             ]
             return user_data

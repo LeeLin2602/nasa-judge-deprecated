@@ -1,6 +1,8 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from utils import managed_session
 from models import db
+
 
 class Submissions:
     def __init__(self, sql_engine):
@@ -18,15 +20,18 @@ class Submissions:
 
     def query_submission(self, user_id, problem_id):
         with managed_session(self.session_factory) as session:
-            submission = session.query(db.Submission).filter_by(
-                user_id=user_id, problem_id=problem_id).first()
+            submission = (
+                session.query(db.Submission)
+                .filter_by(user_id=user_id, problem_id=problem_id)
+                .first()
+            )
             if submission:
                 return {
                     "id": submission.id,
                     "user_id": submission.user_id,
                     "problem_id": submission.problem_id,
                     "submission_score": submission.submission_score,
-                    "submit_time": submission.submit_time
+                    "submit_time": submission.submit_time,
                 }
             return None
 
@@ -39,8 +44,9 @@ class Submissions:
                     "user_id": submission.user_id,
                     "problem_id": submission.problem_id,
                     "submission_score": submission.submission_score,
-                    "submit_time": submission.submit_time
-                } for submission in submissions
+                    "submit_time": submission.submit_time,
+                }
+                for submission in submissions
             ]
             return submission_data
 
@@ -53,7 +59,8 @@ class Submissions:
                     "user_id": submission.user_id,
                     "problem_id": submission.problem_id,
                     "submission_score": submission.submission_score,
-                    "submit_time": submission.submit_time
-                } for submission in submissions
+                    "submit_time": submission.submit_time,
+                }
+                for submission in submissions
             ]
             return submission_data
