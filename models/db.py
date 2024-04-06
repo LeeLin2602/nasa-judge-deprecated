@@ -9,6 +9,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255))
+    email = Column(String(255))
     role = Column(String(255))
     submissions = relationship("Submission", back_populates="user")
     wireguard_profiles = relationship("WireguardProfile", back_populates="user")

@@ -37,7 +37,7 @@ def authorize():
 
 
 @app.route("/logout")
-@jwt_required
+@jwt_required()
 def logout():
     current_user = get_jwt_identity()
     print(current_user)

@@ -3,6 +3,7 @@ USE `nasa_judge`;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
+    email VARCHAR(255),
     role VARCHAR(255)
 );
 
