@@ -1,26 +1,26 @@
 import secrets
+import logging
 from sqlalchemy import create_engine
-from flask import Flask, session
-from flask_jwt_extended import JWTManager  # type: ignore
-
-from repository import Profiles, Users, Problems, Submissions, Subtasks
+from flask import Flask
 import config
+
+from repository import users
+from service import AuthService
+from authlib.integrations.flask_client import OAuth
+
 
 app = Flask(__name__)
 
-app.secret_key = secrets.token_hex(16)
-app.config["SESSION_COOKIE_NAME"] = "google-login-session"
-app.config["PERMANENT_SESSION_LIFETIME"] = 300
-app.config["JWT_SECRET_KEY"] = secrets.token_hex(16)
-
-jwt = JWTManager(app)
-
-from controllers import auth
-
-@app.route("/")
-def homepage():
-    email = session.get("email", None)
-    return f"Hello, {email}!" if email else "Hello, Guest!"
+oauth = OAuth(app)
+google_oauth = oauth.register(
+    name="google",
+    client_id=config.GOOGLE_CLIENT_ID,
+    client_secret=config.GOOGLE_CLIENT_SECRET,
+    api_base_url="https://www.googleapis.com/oauth2/v1/",
+    userinfo_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=config.GOOGLE_DISCOVERY_URL,
+)
 
 connection_string = (
     f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
@@ -29,33 +29,11 @@ connection_string = (
 
 SQL_ENGINE = create_engine(connection_string)
 
-profiles = Profiles(SQL_ENGINE)
-profiles.add_profile()
-# print(profiles.query_profile(1))
-profiles.del_profile(1)
+users = users.Users(SQL_ENGINE)
+auth_service = AuthService(logging, config.JWT_SECRET, users)
 
-users = Users(SQL_ENGINE)
-users.add_user("roger", "rogerdeng92@gmail.com")
-print(users.query_user("roger"))
+from controllers import auth # pylint: disable=wrong-import-position
 
-problems = Problems(SQL_ENGINE)
-problems.add_problems("problem1", "2021-01-01", "2021-01-02")
-# print(problems.query_problem("problem1"))
-
-submissions = Submissions(SQL_ENGINE)
-submissions.add_submission(1, 1, 100)
-# print(submissions.query_submission(1, 1))
-
-subtasks = Subtasks(SQL_ENGINE)
-subtasks.add_subtask(1, "task1", 100)
-subtasks.add_subtask(1, "task2", 100)
-subtasks.del_subtask(1)
-
-problems = Problems(SQL_ENGINE)
-# problems.add_problems("problem2", "2021-01-01", "2021-01-02")
-# print(problems.query_problem("problem2"))
-# print(problems.query_all_problems())
-# print(problems.query_subtask(1))
 
 if __name__ == "__main__":
     app.run(debug=True)
