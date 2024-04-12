@@ -70,7 +70,7 @@ CREATE TABLE subtask_scripts(
 
 CREATE TABLE subtask_playbooks(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    task_id INT,
+    problem_id INT,
     playbook_name VARCHAR(255),
-    FOREIGN KEY (task_id) REFERENCES subtasks(id)
+    FOREIGN KEY (problem_id) REFERENCES problems(id)
 );

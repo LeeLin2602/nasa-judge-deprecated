@@ -100,6 +100,6 @@ class SubtaskScript(Base):
 class SubtaskPlaybook(Base):
     __tablename__ = "subtask_playbooks"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    task_id = Column(Integer, ForeignKey("subtasks.id"))
+    problem_id = Column(Integer, ForeignKey("problems.id"))
     playbook_name = Column(String(255))
-    task = relationship("Subtask", back_populates="playbooks")
+    problem = relationship("Problems", back_populates="playbooks")
