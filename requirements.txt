@@ -128,4 +128,3 @@ Werkzeug==3.0.1
 wgconfig==1.0.1
 xkcdpass==1.19.9
 yamlreader==3.0.4
-Authlib==1.3.0

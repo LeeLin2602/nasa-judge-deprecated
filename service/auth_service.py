@@ -16,7 +16,7 @@ class AuthService:
         now = int(datetime.now(tz=timezone.utc).timestamp())
         payload = {
             "iat": now,
-            "exp": now + 3600,  # 1 hour validity
+            "exp": now + 3600,
             "uid": user['id'],
             "email": user['email'],
             "role": user['role'],
