@@ -1,6 +1,8 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from utils import managed_session
 from models import db
+
 
 class Problems:
     def __init__(self, sql_engine):
@@ -10,23 +12,23 @@ class Problems:
     def add_problems(self, problem_name, start_time, deadline):
         with managed_session(self.session_factory) as session:
             problem = db.Problem(
-                problem_name=problem_name,
-                start_time=start_time,
-                deadline=deadline
+                problem_name=problem_name, start_time=start_time, deadline=deadline
             )
             session.add(problem)
             return problem.id
 
     def query_problem(self, problem_name):
         with managed_session(self.session_factory) as session:
-            problem = session.query(db.Problem).filter_by(problem_name=problem_name).first()
+            problem = (
+                session.query(db.Problem).filter_by(problem_name=problem_name).first()
+            )
             if problem:
                 problem_data = {
                     "id": problem.id,
                     "problem_name": problem.problem_name,
                     "created_time": problem.created_time,
                     "start_time": problem.start_time,
-                    "deadline": problem.deadline
+                    "deadline": problem.deadline,
                 }
                 return problem_data
             return None
@@ -58,19 +60,25 @@ class Problems:
                     "problem_name": problem.problem_name,
                     "created_time": problem.created_time,
                     "start_time": problem.start_time,
-                    "deadline": problem.deadline
-                } for problem in problems
+                    "deadline": problem.deadline,
+                }
+                for problem in problems
             ]
             return problem_data
 
     def query_subtask(self, problem_id):
         with managed_session(self.session_factory) as session:
-            task_list = session.query(db.Subtask).filter_by(problem_id=problem_id, is_valid=1).all()
+            task_list = (
+                session.query(db.Subtask)
+                .filter_by(problem_id=problem_id, is_valid=1)
+                .all()
+            )
             task_data = [
                 {
                     "id": task.id,
                     "task_name": task.task_name,
                     "points": task.points,
-                } for task in task_list
+                }
+                for task in task_list
             ]
             return task_data

@@ -2,3 +2,5 @@ data/db
 config.py
 __pycache__
 venv
+clientscript.json
+.vscode

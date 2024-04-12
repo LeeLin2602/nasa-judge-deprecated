@@ -1,6 +1,8 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from utils import managed_session
 from models import db
+
 
 class Profiles:
     def __init__(self, sql_engine):
@@ -15,13 +17,17 @@ class Profiles:
 
     def del_profile(self, profile_id):
         with managed_session(self.session_factory) as session:
-            profile = session.query(db.WireguardProfile).filter_by(id=profile_id).first()
+            profile = (
+                session.query(db.WireguardProfile).filter_by(id=profile_id).first()
+            )
             if profile:
                 profile.valid = False
 
     def query_profile(self, profile_id):
         with managed_session(self.session_factory) as session:
-            profile = session.query(db.WireguardProfile).filter_by(id=profile_id).first()
+            profile = (
+                session.query(db.WireguardProfile).filter_by(id=profile_id).first()
+            )
             if profile:
                 profile_data = {
                     "id": profile.id,
@@ -39,6 +45,7 @@ class Profiles:
                     "id": profile.id,
                     "is_valid": profile.is_valid,
                     "creation_date_time": profile.creation_date_time,
-                } for profile in profiles
+                }
+                for profile in profiles
             ]
             return profile_data

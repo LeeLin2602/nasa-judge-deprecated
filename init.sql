@@ -3,7 +3,8 @@ USE `nasa_judge`;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
-    role VARCHAR(255)
+    email VARCHAR(255),
+    role VARCHAR(255) DEFAULT 'user'
 );
 
 CREATE TABLE problems (
@@ -42,11 +43,34 @@ CREATE TABLE wireguard_profiles (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE subtaskResult (
+CREATE TABLE subtask_results (
     id INT AUTO_INCREMENT PRIMARY KEY,
     submission_id INT,
     task_id INT,
     is_passed BOOLEAN,
+    points INT,
     FOREIGN KEY (submission_id) REFERENCES submissions(id),
+    FOREIGN KEY (task_id) REFERENCES subtasks(id)
+);
+
+CREATE TABLE subtask_dependencies(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    parent_task_id INT,
+    child_task_id INT,
+    FOREIGN KEY (parent_task_id) REFERENCES subtasks(id),
+    FOREIGN KEY (child_task_id) REFERENCES subtasks(id)
+);
+
+CREATE TABLE subtask_scripts(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT,
+    script_name VARCHAR(255),
+    FOREIGN KEY (task_id) REFERENCES subtasks(id)
+);
+
+CREATE TABLE subtask_playbooks(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT,
+    playbook_name VARCHAR(255),
     FOREIGN KEY (task_id) REFERENCES subtasks(id)
 );
