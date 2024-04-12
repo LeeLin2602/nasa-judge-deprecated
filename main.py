@@ -1,12 +1,11 @@
-import secrets
 import logging
 from sqlalchemy import create_engine
 from flask import Flask
-import config
+from authlib.integrations.flask_client import OAuth
 
+import config
 from repository import users
 from service import AuthService
-from authlib.integrations.flask_client import OAuth
 
 
 app = Flask(__name__)
@@ -32,8 +31,7 @@ SQL_ENGINE = create_engine(connection_string)
 users = users.Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
 
-from controllers import auth # pylint: disable=wrong-import-position
-
+from controllers import auth # pylint: disable=wrong-import-position, unused-import, cyclic-import
 
 if __name__ == "__main__":
     app.run(debug=True)

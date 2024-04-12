@@ -1,19 +1,18 @@
+
 from sqlalchemy import TIMESTAMP, Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
 Base = declarative_base()
 
-
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255))
     email = Column(String(255))
-    role = Column(String(255))
+    role = Column(String(255), default="user")
     submissions = relationship("Submission", back_populates="user")
     wireguard_profiles = relationship("WireguardProfile", back_populates="user")
-
 
 class Problem(Base):
     __tablename__ = "problems"
@@ -26,7 +25,6 @@ class Problem(Base):
     submissions = relationship("Submission", back_populates="problem")
     subtasks = relationship("Subtask", back_populates="problem")
 
-
 class Submission(Base):
     __tablename__ = "submissions"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -37,7 +35,6 @@ class Submission(Base):
     user = relationship("User", back_populates="submissions")
     problem = relationship("Problem", back_populates="submissions")
 
-
 class Subtask(Base):
     __tablename__ = "subtasks"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -45,8 +42,20 @@ class Subtask(Base):
     task_name = Column(String(255))
     points = Column(Integer)
     is_valid = Column(Boolean, default=True)
-    problem = relationship("Problem", back_populates="subtasks")
-
+    problem = relationship("Problem",
+                           back_populates="subtasks")
+    subtask_results = relationship("SubtaskResult",
+                                   back_populates="subtask")
+    dependencies = relationship("SubtaskDependency",
+                                back_populates="parent_task",
+                                foreign_keys="[SubtaskDependency.parent_task_id]")
+    dependents = relationship("SubtaskDependency",
+                              back_populates="child_task",
+                              foreign_keys="[SubtaskDependency.child_task_id]")
+    scripts = relationship("SubtaskScript",
+                           back_populates="task")
+    playbooks = relationship("SubtaskPlaybook",
+                             back_populates="task")
 
 class WireguardProfile(Base):
     __tablename__ = "wireguard_profiles"
@@ -56,11 +65,41 @@ class WireguardProfile(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="wireguard_profiles")
 
-
 class SubtaskResult(Base):
-    __tablename__ = "subtaskResult"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    submission_id = Column(Integer, ForeignKey("submissions.id"))
-    task_id = Column(Integer, ForeignKey("subtasks.id"))
+    __tablename__ = "subtask_results"
+    id = Column(Integer,
+                primary_key=True,
+                autoincrement=True)
+    submission_id = Column(Integer,
+                           ForeignKey("submissions.id"))
+    task_id = Column(Integer,
+                     ForeignKey("subtasks.id"))
     is_passed = Column(Boolean)
-    subtask = relationship("Subtask")  # Corrected to 'Subtask'
+    subtask = relationship("Subtask",
+                           back_populates="subtask_results")
+
+class SubtaskDependency(Base):
+    __tablename__ = "subtask_dependencies"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    parent_task_id = Column(Integer, ForeignKey("subtasks.id"))
+    child_task_id = Column(Integer, ForeignKey("subtasks.id"))
+    parent_task = relationship("Subtask",
+                               back_populates="dependencies",
+                               foreign_keys=[parent_task_id])
+    child_task = relationship("Subtask",
+                              back_populates="dependents",
+                              foreign_keys=[child_task_id])
+
+class SubtaskScript(Base):
+    __tablename__ = "subtask_scripts"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    task_id = Column(Integer, ForeignKey("subtasks.id"))
+    script_name = Column(String(255))
+    task = relationship("Subtask", back_populates="scripts")
+
+class SubtaskPlaybook(Base):
+    __tablename__ = "subtask_playbooks"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    task_id = Column(Integer, ForeignKey("subtasks.id"))
+    playbook_name = Column(String(255))
+    task = relationship("Subtask", back_populates="playbooks")

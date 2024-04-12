@@ -20,7 +20,12 @@ class Users:
         with managed_session(self.session_factory) as session:
             user = session.query(db.User).filter_by(email=email).first()
             if user:
-                user_data = {"id": user.id, "name": user.name, "email": user.email, "role": user.role}
+                user_data = {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "role": user.role,
+                }
                 return user_data
             return None
 
