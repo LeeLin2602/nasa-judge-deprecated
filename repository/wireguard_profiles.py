@@ -13,6 +13,8 @@ class Profiles:
         with managed_session(self.session_factory) as session:
             profile = db.WireguardProfile()
             session.add(profile)
+            session.flush()
+            
             return profile.id
 
     def del_profile(self, profile_id):

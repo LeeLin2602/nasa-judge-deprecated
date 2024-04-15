@@ -4,9 +4,9 @@ from flask import Flask
 from authlib.integrations.flask_client import OAuth
 
 import config
-from repository import users
+from repository import users, Profiles
 from service import AuthService
-
+from models import wg
 
 app = Flask(__name__)
 
@@ -27,6 +27,11 @@ connection_string = (
 )
 
 SQL_ENGINE = create_engine(connection_string)
+profiles = Profiles(SQL_ENGINE)
+
+print(wg.generate_wireguard_config(profiles.add_profile()))
+print("\n\n\n\n\n\n\n")
+
 
 users = users.Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
@@ -35,3 +40,4 @@ from controllers import auth # pylint: disable=wrong-import-position, unused-imp
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
