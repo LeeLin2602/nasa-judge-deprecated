@@ -50,7 +50,7 @@ def generate_wireguard_config(profile_id):
     wg.add_peer(peer_public_key)
     wg.add_attr(peer_public_key, "AllowedIPs", peer_allowed_ips)
     wg.write_file()
-
+    run_subprocess(f"wg-quick up {wg_interface_name}")
     peer_config = f"""
 [Interface]
 PrivateKey = {peer_private_key}
@@ -65,7 +65,6 @@ AllowedIPs = 10.64.89.0/24
 
     ipr = IPRoute()
     vrf_name = configure_vrf(ipr, profile_id, wg_interface_name)
-    run_subprocess(f"wg-quick up {wg_interface_name}")
 
     print(vrf_name)
     ipr.close()
