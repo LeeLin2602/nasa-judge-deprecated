@@ -9,18 +9,18 @@ class Problems:
         self.sql_engine = sql_engine
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
 
-    def add_problems(self, problem_name, start_time, deadline):
+    def create_problems(self, problem_name):
         with managed_session(self.session_factory) as session:
             problem = db.Problem(
-                problem_name=problem_name, start_time=start_time, deadline=deadline
+                problem_name=problem_name,
             )
             session.add(problem)
             return problem.id
 
-    def query_problem(self, problem_name):
+    def query_problem(self, problem_id):
         with managed_session(self.session_factory) as session:
             problem = (
-                session.query(db.Problem).filter_by(problem_name=problem_name).first()
+                session.query(db.Problem).filter_by(id=problem_id).first()
             )
             if problem:
                 problem_data = {
