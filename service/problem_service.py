@@ -6,6 +6,7 @@ class ProblemService:
         self.logger = logger
         self.secret = jwt_secret
         self.problems = problems
+        
 
     def create_problem(self, problem_name, start_time, deadline):
         problem = self.problems.query_problem(problem_name)

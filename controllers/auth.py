@@ -2,7 +2,8 @@ import secrets
 from flask import url_for, jsonify, request, g
 
 import authlib.integrations.base_client
-from main import auth_service, app, google_oauth
+from main import auth_service
+from app import app, google_oauth
 
 app.secret_key = secrets.token_urlsafe(16)
 
@@ -22,6 +23,9 @@ def load_user_identity():
     else:
         g.user = None
 
+# @app.route('/numbers/')
+# def print_list():
+#     return jsonify(list(range(5)))
 @app.route("/get_login_url")
 def get_login_url():
     redirect_uri = url_for("authorize", _external=True)
