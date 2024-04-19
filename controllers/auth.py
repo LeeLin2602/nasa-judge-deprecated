@@ -1,9 +1,10 @@
 import secrets
-from flask import url_for, jsonify, request, g
+from flask import url_for, jsonify, request, g, redirect, session
 
 import authlib.integrations.base_client
 from main import auth_service
-from app import app, google_oauth
+from app import app
+import logging
 
 app.secret_key = secrets.token_urlsafe(16)
 
@@ -29,19 +30,36 @@ def load_user_identity():
 @app.route("/get_login_url")
 def get_login_url():
     redirect_uri = url_for("authorize", _external=True)
-    auth_url = google_oauth.authorize_redirect(redirect_uri, return_json=True)
-    return jsonify({
-        "auth_url": str(auth_url.location),
-    })
-
+    # return jsonify({
+    #     "auth_url": str(auth_url.location),
+    # })
+    return google_oauth.authorize_redirect(redirect_uri, return_json=True)
 @app.route("/authorize")
 def authorize():
     try:
-        google_oauth.authorize_access_token()
-        resp = google_oauth.get("userinfo")
-        user_info = resp.json()
-        token = auth_service.issue_token(user_info)
-        return token
+        # token = google_oauth.authorize_access_token()
+        # resp = google_oauth.get("account/verify_credentials.json")
+        # resp.raise_for_status()
+        # profile = resp.json()
+
+        token = google_oauth.authorize_access_token()
+        user = google_oauth.get('userinfo').json()
+        session['user'] = user
+        # do something with the token and profile
+        return redirect('/')
+    except authlib.integrations.base_client.errors.MismatchingStateError:
+        return jsonify({"error": "MismatchingStateError"})
+
+@app.route("/profile")
+def show_profile():
+    try:
+        resp = google_oauth.get('user')
+        resp.raise_for_status()
+        profile = resp.json()
+        return profile
+        # user_info = resp.json()
+        # token = auth_service.issue_token(user_info)
+        # return token
     except authlib.integrations.base_client.errors.MismatchingStateError:
         return jsonify({"error": "MismatchingStateError"})
 
