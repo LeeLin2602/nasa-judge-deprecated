@@ -11,7 +11,6 @@ def run_subprocess(command):
         .strip()
     )
 
-
 def generate_wireguard_keys():
     """Generates a WireGuard private and public key pair."""
     private_key = run_subprocess("wg genkey")
