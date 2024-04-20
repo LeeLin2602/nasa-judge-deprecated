@@ -4,8 +4,8 @@ from flask import Flask
 from authlib.integrations.flask_client import OAuth
 
 import config
-from repository import users, Profiles
-from service import AuthService
+from repository import users, Profiles, problems
+from service import AuthService, problem_service
 from models import wg
 from flask import url_for, jsonify, request, g
 from app import app
@@ -24,7 +24,8 @@ print("\n\n\n\n\n\n\n")
 
 users = users.Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
-
+problems = problems.Problems(SQL_ENGINE)
+problem_service = problem_service(logging, config.JWT_SECRET, problems)
 from controllers import auth, problem # pylint: disable=wrong-import-position, unused-import, cyclic-import
 
 if __name__ == "__main__":

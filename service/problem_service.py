@@ -2,10 +2,12 @@ from datetime import timezone, datetime
 import jwt
 
 class ProblemService:
-    def __init__(self, logger, jwt_secret, problems):
+    def __init__(self, logger, jwt_secret, problems, subtasks, playbooks):
         self.logger = logger
         self.secret = jwt_secret
         self.problems = problems
+        self.subtasks = subtasks
+        self.playbooks = playbooks
         
 
     def create_problem(self, problem_name, start_time, deadline):
