@@ -9,7 +9,7 @@ class Problems:
         self.sql_engine = sql_engine
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
 
-    def create_problems(self, problem_name):
+    def create_problem(self, problem_name):
         with managed_session(self.session_factory) as session:
             problem = db.Problem(
                 problem_name=problem_name,
@@ -65,8 +65,8 @@ class Problems:
                 for problem in problems
             ]
             return problem_data
-
-    def query_subtask(self, problem_id):
+    # subtask
+    def query_all_subtasks(self, problem_id):
         with managed_session(self.session_factory) as session:
             task_list = (
                 session.query(db.Subtask)
@@ -82,3 +82,22 @@ class Problems:
                 for task in task_list
             ]
             return task_data
+    # playbook
+    def query_all_playbooks(self, problem_id):
+        with managed_session(self.session_factory) as session:
+            playbook_list = (
+                session.query(db.SubtaskPlaybook)
+                .join(db.Problem)  # Joins the Problem table4
+                .filter(db.SubtaskPlaybook.problem_id == problem_id, db.Problem.is_valid == True)
+                .filter_by(problem_id=problem_id, is_valid=1)
+                .all()
+            )
+            playbook_data = [
+                {
+                    "id": playbook.id,
+                    "playbook_name": playbook.playbook_name,
+                }
+                for playbook in playbook_list
+            ]
+            return playbook_data
+    

@@ -9,7 +9,7 @@ class SubtaskPlaybooks:
         self.sql_engine = sql_engine
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
     
-    def add_playbook(self, problem_id, playbook_name):
+    def create_playbook(self, problem_id, playbook_name):
         """Add a new playbook to a problem."""
         with managed_session(self.session_factory) as session:
             playbook = db.SubtaskPlaybook(
@@ -19,19 +19,20 @@ class SubtaskPlaybooks:
             session.add(playbook)
             session.flush()  # Flush to ensure playbook.id is set
             return playbook.id
-    def query_playbooks(self, problem_id):
+        
+    def query_playbook(self, playbook_id):
         """Retrieve all playbooks associated with a problem."""
         with managed_session(self.session_factory) as session:
-            playbook = (
-                session.query(db.SubtaskPlaybook).filter_by(problem_id=problem_id).first()
-            )
+            playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).all()
             if playbook:
                 playbook_data = {
-                    "id": playbook.id,
-                    "playbook_name": playbook.playbook_name,
-                }
+                        "id": playbook.id,
+                        "playbook_name": playbook.playbook_name,
+                    }
                 return playbook_data
+            
             return None
+        
     def del_playbook(self, playbook_id):
         """Mark a playbook as invalid or remove it from the database."""
         with managed_session(self.session_factory) as session:
