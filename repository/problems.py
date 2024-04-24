@@ -9,7 +9,7 @@ class Problems:
         self.sql_engine = sql_engine
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
 
-    def create_problem(self, problem_name):
+    def create_problem(self, problem_name="newProblem"):
         with managed_session(self.session_factory) as session:
             problem = db.Problem(
                 problem_name=problem_name,

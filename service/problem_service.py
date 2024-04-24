@@ -10,29 +10,28 @@ class ProblemService:
         self.playbooks = playbooks
         
 
-    def create_problem(self, problem_name, start_time, deadline):
+    def create_problem(self, problem_name="newProblem"):
         problem = self.problems.query_problem(problem_name)
         if problem:
             self.logger.error(f"Problem already exists: {problem_name}")
             return None
 
-        now = int(datetime.now(tz=timezone.utc).timestamp())
-        problem_id = self.problems.create_problem(problem_name, start_time, deadline)
+        problem_id = self.problems.create_problem(problem_name)
         return problem_id
 
-    def delete_problem(self, problem_name):
-        problem = self.problems.query_problem(problem_name)
+    def delete_problem(self, problem_id):
+        problem = self.problems.query_problem(problem_id)
         if not problem:
-            self.logger.error(f"Problem not found: {problem_name}")
+            self.logger.error(f"Problem not found: {problem_id}")
             return None
 
-        self.problems.del_problem(problem_name)
-        return problem_name
+        self.problems.del_problem(problem_id)
+        return problem_id
     
-    def query_problem(self, problem_name):
-        problem = self.problems.query_problem(problem_name)
+    def query_problem(self, problem_id):
+        problem = self.problems.query_problem(problem_id)
         if not problem:
-            self.logger.error(f"Problem not found: {problem_name}")
+            self.logger.error(f"Problem not found: {problem_id}")
             return None
 
         return problem

@@ -102,6 +102,7 @@ class SubtaskPlaybook(Base):
     __tablename__ = "subtask_playbooks"
     id = Column(Integer, primary_key=True, autoincrement=True)
     problem_id = Column(Integer, ForeignKey("problems.id"))
+    is_valid = Column(Boolean, default=True)
     playbook_name = Column(String(255))
     problem = relationship("Problem", back_populates="playbooks")
 

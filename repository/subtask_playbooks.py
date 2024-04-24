@@ -18,6 +18,7 @@ class SubtaskPlaybooks:
             )
             session.add(playbook)
             session.flush()  # Flush to ensure playbook.id is set
+            session.commit()
             return playbook.id
         
     def query_playbook(self, playbook_id):
@@ -39,9 +40,10 @@ class SubtaskPlaybooks:
             playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).first()
             if playbook:
                 # Option 1: Soft delete (mark as invalid)
+                playbook.is_valid = 0
                 # Option 2: Hard delete (remove from DB)
-                session.delete(playbook)
-                
+                # session.delete(playbook)
+                # session.commit()
                 return {"status": "success", "id": playbook_id}
             return {"status": "error", "message": "Playbook not found"}
     def update_playbook(self, playbook_id, new_name):
