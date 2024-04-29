@@ -70,6 +70,7 @@ CREATE TABLE subtask_scripts(
 
 CREATE TABLE subtask_playbooks(
     id INT AUTO_INCREMENT PRIMARY KEY,
+    is_valid BOOLEAN DEFAULT FALSE,
     problem_id INT,
     playbook_name VARCHAR(255),
     FOREIGN KEY (problem_id) REFERENCES problems(id)
