@@ -9,7 +9,7 @@ from instance import app, users, auth_service, profiles, problems, subtasks, sub
 
 
 
-from controllers import auth, problem # pylint: disable=wrong-import-position, unused-import, cyclic-import
+from controllers import auth_bp, problem_bp # pylint: disable=wrong-import-position, unused-import, cyclic-import
 
 @app.before_request
 def load_user_identity():
@@ -34,7 +34,7 @@ def load_user_identity():
     else:
         g.user = None
 
-app.register_blueprint(auth.auth_bp, url_prefix="/auth")
-app.register_blueprint(problem.problem_bp, url_prefix="/problems")
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(problem_bp, url_prefix="/problems")
 if __name__ == "__main__":
     app.run(debug=True)
