@@ -2,10 +2,11 @@ import secrets
 from flask import url_for, jsonify, request, g, Blueprint
 
 import authlib.integrations.base_client
-from instance import app, google_oauth, auth_service
+# from instance import app, google_oauth, auth_service
 
 auth_bp = Blueprint('auth', __name__)
 auth_bp.secret_key = secrets.token_urlsafe(16)
+
 # @app.before_request
 # def load_user_identity():
 #     authorization_header = request.headers.get("Authorization")
@@ -24,8 +25,8 @@ auth_bp.secret_key = secrets.token_urlsafe(16)
 
 @auth_bp.route("/get_login_url")
 def get_login_url():
-    redirect_uri = url_for("auth.authorize", _external=True)
-    auth_url = google_oauth.authorize_redirect(redirect_uri, return_json=True)
+    redirect_uri = url_for("authorize", _external=True)
+    auth_url = g.google_oauth.authorize_redirect(redirect_uri, return_json=True)
     return jsonify({
         "auth_url": str(auth_url.location),
     })
@@ -33,10 +34,10 @@ def get_login_url():
 @auth_bp.route("/authorize")
 def authorize():
     try:
-        google_oauth.authorize_access_token()
-        resp = google_oauth.get("userinfo")
+        g.google_oauth.authorize_access_token()
+        resp = g.google_oauth.get("userinfo")
         user_info = resp.json()
-        token = auth_service.issue_token(user_info)
+        token = g.auth_service.issue_token(user_info)
         return token
     except authlib.integrations.base_client.errors.MismatchingStateError:
         return jsonify({"error": "MismatchingStateError"})
