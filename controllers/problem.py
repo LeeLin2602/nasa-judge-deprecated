@@ -46,10 +46,20 @@ def update_problem(problem_id):
     problem = g.problem_service.query_problem(problem_id)
     if problem is None:
         return jsonify({"error": "Problem not found"}), 404
-    problem_name = request.json.get("problem_name")
-    start_time = request.json.get("start_time")
-    deadline = request.json.get("deadline")
-    problem_id = g.problem_service.update_problem(problem_id, problem_name, start_time, deadline)
+    data = request.get_json()  # Get the JSON payload
+    problem_name = data.get("problem_name")
+    allow_submission = data.get("allow_submission")
+    start_time = data.get("start_time")
+    deadline = data.get("deadline")
+    subtasks = data.get('subtasks', [])
+    playbooks = data.get('playbooks', [])
+    new_subtasks = data.get('newSubtasks', [])
+    new_playbooks = data.get('newPlaybooks', [])
+    print("Subtasks: ", subtasks)
+    print("Playbooks: ", playbooks)
+    problem_id = g.problem_service.update_problem(problem_id, problem_name, allow_submission, 
+                                                    start_time, deadline, subtasks, playbooks, 
+                                                    new_subtasks, new_playbooks)
     return jsonify({"problem_id": problem_id})
 
 

@@ -40,13 +40,22 @@ class ProblemService:
         problems = self.problems.query_all_problems()
         return problems
     
-    def update_problem(self, problem_id, problem_name, start_time, deadline):
+    def update_problem(self, problem_id, problem_name, allow_submission, 
+                                start_time, deadline, subtasks, playbooks, 
+                                new_subtasks, new_playbooks):
+        """
+        Args:
+        subtasks: list of json
+        playbooks: list of json
+        """
         problem = self.problems.query_problem(problem_id)
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
     
-        self.problems.update_problem(problem_id, problem_name, start_time, deadline)
+        self.problems.update_problem(problem_id, problem_name, allow_submission, 
+                                        start_time, deadline, subtasks, playbooks, 
+                                        new_subtasks, new_playbooks)
         return problem_id
     
     def query_all_subtasks(self, problem_id):
