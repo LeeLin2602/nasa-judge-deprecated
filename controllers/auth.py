@@ -24,7 +24,7 @@ auth_bp.secret_key = secrets.token_urlsafe(16)
 
 @auth_bp.route("/get_login_url")
 def get_login_url():
-    redirect_uri = url_for("authorize", _external=True)
+    redirect_uri = url_for("auth.authorize", _external=True)
     auth_url = g.google_oauth.authorize_redirect(redirect_uri, return_json=True)
     return jsonify({
         "auth_url": str(auth_url.location),
@@ -36,6 +36,7 @@ def authorize():
         g.google_oauth.authorize_access_token()
         resp = g.google_oauth.get("userinfo")
         user_info = resp.json()
+        print(f'User info: {user_info}')
         token = g.auth_service.issue_token(user_info)
         return token
     except authlib.integrations.base_client.errors.MismatchingStateError:

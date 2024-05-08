@@ -21,6 +21,7 @@ class Problem(Base):
     created_time = Column(TIMESTAMP, default=func.now())
     start_time = Column(DateTime)
     deadline = Column(DateTime)
+    allow_submission = Column(Boolean, default=False)
     submissions = relationship("Submission", back_populates="problem")
     subtasks = relationship("Subtask", back_populates="problem")
     playbooks = relationship("SubtaskPlaybook", back_populates="problem")
@@ -54,7 +55,7 @@ class Subtask(Base):
         back_populates="child_task",
         foreign_keys="SubtaskDependency.child_task_id"
     )
-    scripts = relationship("SubtaskScript", back_populates="task")
+    # scripts = relationship("SubtaskScript", back_populates="task")
 
 class WireguardProfile(Base):
     __tablename__ = "wireguard_profiles"
@@ -91,18 +92,18 @@ class SubtaskDependency(Base):
         primaryjoin="Subtask.id==SubtaskDependency.child_task_id"
     )
 
-class SubtaskScript(Base):
-    __tablename__ = "subtask_scripts"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    task_id = Column(Integer, ForeignKey("subtasks.id"))
-    script_name = Column(String(255))
-    task = relationship("Subtask", back_populates="scripts")
+# class SubtaskScript(Base):
+#     __tablename__ = "subtask_scripts"
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     task_id = Column(Integer, ForeignKey("subtasks.id"))
+#     # script_name = Column(String(255))
+#     task = relationship("Subtask", back_populates="scripts")
 
 class SubtaskPlaybook(Base):
     __tablename__ = "subtask_playbooks"
     id = Column(Integer, primary_key=True, autoincrement=True)
     problem_id = Column(Integer, ForeignKey("problems.id"))
-    is_valid = Column(Boolean, default=False)
+    is_valid = Column(Boolean, default=True)
     playbook_name = Column(String(255))
     problem = relationship("Problem", back_populates="playbooks")
 

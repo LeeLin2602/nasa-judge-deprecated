@@ -8,11 +8,13 @@ from models import wg
 from flask import url_for, jsonify, request, g
 from repository import users, Profiles, problems, subtasks, SubtaskPlaybooks
 from service import AuthService, ProblemService
-
+import secrets
 
 
 app = Flask(__name__)
-# app.secret_key = config.SECRET_KEY
+# app.secret_key = secrets.token_urlsafe(16)
+app.secret_key = config.SECRET_KEY
+
 # Initialize OAuth with app
 oauth = OAuth(app)
 google_oauth = oauth.register(
@@ -44,17 +46,17 @@ problem_service = ProblemService(logging, config.JWT_SECRET, problems, subtasks,
 @app.before_request
 def load_user_identity():
     authorization_header = request.headers.get("Authorization")
+    g.users = users
+    g.profiles = profiles
+    g.problems = problems
+    g.subtasks = subtasks
+    g.subtask_playbooks = subtask_playbooks
+    g.auth_service = auth_service
+    g.problem_service = problem_service
+    g.google_oauth = google_oauth
     if authorization_header:
         token = authorization_header.replace('Bearer ', '', 1)
         g.user = auth_service.authenticate_token(token)
-        g.users = users
-        g.profiles = profiles
-        g.problems = problems
-        g.subtasks = subtasks
-        g.subtask_playbooks = subtask_playbooks
-        g.auth_service = auth_service
-        g.problem_service = problem_service
-        g.google_oauth = google_oauth
         if g.user is None:
             return
         extra = {

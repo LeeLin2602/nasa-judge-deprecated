@@ -10,7 +10,7 @@ class AuthService:
     def issue_token(self, profile):
         user = self.users.query_user(profile['email'])
         if not user:
-            self.users.add_user(profile['name'], profile['email'])
+            self.users.authorize(profile['name'], profile['email'])
             user = self.users.query_user(profile['email'])
 
         now = int(datetime.now(tz=timezone.utc).timestamp())

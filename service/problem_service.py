@@ -45,19 +45,21 @@ class ProblemService:
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
-
+    
         self.problems.update_problem(problem_id, problem_name, start_time, deadline)
         return problem_id
     
     def query_all_subtasks(self, problem_id):
-        subtasks = self.subtasks.query_all_subtasks(problem_id)
+        subtasks = self.problems.query_all_subtasks(problem_id)
         return subtasks
     
     def query_all_playbooks(self, problem_id):
-        subtasks = self.subtasks.query_all_subtasks(problem_id)
+        subtasks = self.problems.query_all_playbooks(problem_id)
         return subtasks
     
-    # subtask
+    """
+    #### subtask
+    """
     def create_subtask(self, problem_id, task_name, points):
         subtask_id = self.subtasks.create_subtask(problem_id, task_name, points)
         return subtask_id
@@ -82,12 +84,12 @@ class ProblemService:
 
         return subtask
     
-    def update_subtask(self, task_id, task_name=None, points=None, is_valid=None):
+    def update_subtask(self, task_id, task_name=None, points=None):
         subtask = self.subtasks.query_subtask(task_id)
         if not subtask:
             self.logger.error(f"Subtask not found: {task_id}")
             return None
-        self.subtasks.update_subtask(task_id, task_name, points, is_valid)
+        self.subtasks.update_subtask(task_id, task_name, points)
         return task_id
     
     # playbooks

@@ -10,6 +10,7 @@ CREATE TABLE users (
 CREATE TABLE problems (
     id INT AUTO_INCREMENT PRIMARY KEY,
     is_valid BOOLEAN DEFAULT TRUE,
+    allow_submissions BOOLEAN DEFAULT FALSE,
     problem_name VARCHAR(255),
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     start_time DATETIME,

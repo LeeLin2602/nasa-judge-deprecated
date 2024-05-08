@@ -17,14 +17,16 @@ class SubtaskPlaybooks:
                 playbook_name=playbook_name,
             )
             session.add(playbook)
-            session.flush()  # Flush to ensure playbook.id is set
+            # session.flush()  # Flush to ensure playbook.id is set
             session.commit()
             return playbook.id
         
     def query_playbook(self, playbook_id):
         """Retrieve all playbooks associated with a problem."""
         with managed_session(self.session_factory) as session:
-            playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).all()
+            playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).first()
+            # if playbook.is_valid is False:
+            #     return None
             if playbook:
                 playbook_data = {
                         "id": playbook.id,
@@ -40,10 +42,10 @@ class SubtaskPlaybooks:
             playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).first()
             if playbook:
                 # Option 1: Soft delete (mark as invalid)
-                playbook.is_valid = 0
+                playbook.is_valid = False
                 # Option 2: Hard delete (remove from DB)
                 # session.delete(playbook)
-                # session.commit()
+                session.commit()
                 return {"status": "success", "id": playbook_id}
             return {"status": "error", "message": "Playbook not found"}
     def update_playbook(self, playbook_id, new_name):
@@ -52,5 +54,6 @@ class SubtaskPlaybooks:
             playbook = session.query(db.SubtaskPlaybook).filter_by(id=playbook_id).first()
             if playbook:
                 playbook.playbook_name = new_name
+                session.commit()
                 return {"status": "success", "id": playbook_id}
             return {"status": "error", "message": "Playbook not found"}

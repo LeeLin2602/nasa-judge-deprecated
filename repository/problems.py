@@ -3,7 +3,6 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from utils import managed_session
 from models import db
 
-
 class Problems:
     def __init__(self, sql_engine):
         self.sql_engine = sql_engine
@@ -12,23 +11,30 @@ class Problems:
     def create_problem(self, problem_name="newProblem"):
         with managed_session(self.session_factory) as session:
             problem = db.Problem(
-                problem_name=problem_name,
+                problem_name=problem_name
             )
             session.add(problem)
+            session.commit()
             return problem.id
 
     def query_problem(self, problem_id):
         with managed_session(self.session_factory) as session:
             problem = (
-                session.query(db.Problem).filter_by(id=problem_id).first()
+                session.query(db.Problem).filter_by(id=problem_id, is_valid=True).first()
             )
+            # if problem.is_valid is False:
+            #     # print("Problem is not valid")
+            #     return None  # Explicitly send a 404 error response
             if problem:
                 problem_data = {
-                    "id": problem.id,
                     "problem_name": problem.problem_name,
                     "created_time": problem.created_time,
                     "start_time": problem.start_time,
                     "deadline": problem.deadline,
+                    "subtasks": problem.subtasks,
+                    "playbooks": problem.playbooks,
+                    "allow_submission": problem.allow_submission,
+                    # "is_valid": problem.is_valid 
                 }
                 return problem_data
             return None
@@ -38,6 +44,7 @@ class Problems:
             problem = session.query(db.Problem).filter_by(id=problem_id).first()
             if problem:
                 problem.is_valid = 0
+                session.commit()
                 return problem.id
             return None
 
@@ -45,9 +52,13 @@ class Problems:
         with managed_session(self.session_factory) as session:
             problem = session.query(db.Problem).filter_by(id=problem_id).first()
             if problem:
+                # print("Problem ID: ", problem_id)
+                # print("Start time: ", start_time)
+                # print("Deadline: ", deadline)
                 problem.problem_name = problem_name
                 problem.start_time = start_time
                 problem.deadline = deadline
+                session.commit()
                 return problem.id
             return None
 
