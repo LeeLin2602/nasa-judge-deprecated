@@ -6,10 +6,10 @@ import config
 
 from models import wg
 from flask import url_for, jsonify, request, g
-from repository import users, Profiles, problems, subtasks, SubtaskPlaybooks
+from repository import Users, Profiles, Problems, Subtasks, SubtaskPlaybooks
 from service import AuthService, ProblemService
 import secrets
-
+import os
 
 app = Flask(__name__)
 # app.secret_key = secrets.token_urlsafe(16)
@@ -35,13 +35,22 @@ SQL_ENGINE = create_engine(connection_string)
 profiles = Profiles(SQL_ENGINE)
 # print(wg.generate_wireguard_config(profiles.add_profile()))
 # print("\n\n\n\n\n\n\n")
-users = users.Users(SQL_ENGINE)
+users = Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
-problems = problems.Problems(SQL_ENGINE)
-subtasks = subtasks.Subtasks(SQL_ENGINE)
+problems = Problems(SQL_ENGINE)
+subtasks = Subtasks(SQL_ENGINE)
 subtask_playbooks = SubtaskPlaybooks(SQL_ENGINE)
 
 problem_service = ProblemService(logging, config.JWT_SECRET, problems, subtasks, subtask_playbooks)
+
+project_dir = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.join(project_dir, "data")
+print(f"Data dir: {data_dir}\n\n\n\n\n\n")
+# playbooks_path = f"./playbooks/1/"
+# os.makedirs(playbooks_path, exist_ok=True)
+# file_path = os.path.join(playbooks_path, "test.yaml")
+# with open(file_path, "w") as f:
+#     f.write("Hello, World!")
 
 @app.before_request
 def load_user_identity():
@@ -54,6 +63,8 @@ def load_user_identity():
     g.auth_service = auth_service
     g.problem_service = problem_service
     g.google_oauth = google_oauth
+    g.project_dir = project_dir
+    g.data_dir = data_dir
     if authorization_header:
         token = authorization_header.replace('Bearer ', '', 1)
         g.user = auth_service.authenticate_token(token)
@@ -66,6 +77,8 @@ def load_user_identity():
         app.logger.info("User %s authenticated", g.user["email"], extra=extra)
     else:
         g.user = None
+
+
 
 from controllers import auth_bp, problem_bp # pylint: disable=wrong-import-position, unused-import, cyclic-import
 

@@ -10,8 +10,8 @@ class ProblemService:
         self.playbooks = playbooks
         
 
-    def create_problem(self, problem_name="newProblem"):
-        problem = self.problems.query_problem(problem_name)
+    def create_problem(self, problem_name="newProblem", data_dir=None):
+        problem = self.problems.query_problem(problem_name, data_dir)
         if problem:
             self.logger.error(f"Problem already exists: {problem_name}")
             return None
@@ -19,8 +19,8 @@ class ProblemService:
         problem_id = self.problems.create_problem(problem_name)
         return problem_id
 
-    def delete_problem(self, problem_id):
-        problem = self.problems.query_problem(problem_id)
+    def delete_problem(self, problem_id, data_dir):
+        problem = self.problems.query_problem(problem_id, data_dir)
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
@@ -28,8 +28,8 @@ class ProblemService:
         self.problems.del_problem(problem_id)
         return problem_id
     
-    def query_problem(self, problem_id):
-        problem = self.problems.query_problem(problem_id)
+    def query_problem(self, problem_id, data_dir):
+        problem = self.problems.query_problem(problem_id, data_dir)
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
@@ -40,22 +40,22 @@ class ProblemService:
         problems = self.problems.query_all_problems()
         return problems
     
-    def update_problem(self, problem_id, problem_name, allow_submission, 
+    def update_problem(self, problem_id, problem_name, allow_submissions, 
                                 start_time, deadline, subtasks, playbooks, 
-                                new_subtasks, new_playbooks):
+                                new_subtasks, new_playbooks, data_dir):
         """
         Args:
         subtasks: list of json
         playbooks: list of json
         """
-        problem = self.problems.query_problem(problem_id)
+        problem = self.problems.query_problem(problem_id, data_dir)
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
     
-        self.problems.update_problem(problem_id, problem_name, allow_submission, 
+        self.problems.update_problem(problem_id, problem_name, allow_submissions, 
                                         start_time, deadline, subtasks, playbooks, 
-                                        new_subtasks, new_playbooks)
+                                        new_subtasks, new_playbooks, data_dir)
         return problem_id
     
     def query_all_subtasks(self, problem_id):

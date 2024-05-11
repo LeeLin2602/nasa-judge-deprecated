@@ -16,39 +16,40 @@ problem_bp = Blueprint('problem', __name__)
 # def page_not_found(e):
 #     return render_template('404.html'), 404
 
-@problem_bp.route('/<string:invalid_path>')
-def handle_unmatched(*args, **kwargs):
-    return jsonify({"error": "Api not found"}), 404
+# @problem_bp.route('/<string:invalid_path>')
+# def handle_unmatched(*args, **kwargs):
+#     return jsonify({"error": "Api not found"}), 404
 
 
 @problem_bp.route("/", methods=["POST"])
 def create_problem():
-    problem_id = g.problem_service.create_problem("New Problem")
+    problem_id = g.problem_service.create_problem("New Problem", g.data_dir)
     return jsonify({"problem_id": problem_id})
 
 @problem_bp.route("/<string:problem_id>", methods=["DELETE"])
 def delete_problem(problem_id):
-    problem = g.problem_service.query_problem(problem_id)
+    problem = g.problem_service.query_problem(problem_id, g.data_dir)
     if problem is None:
         return jsonify({"error": "Problem not found"}), 404
-    problem_id = g.problem_service.delete_problem(problem_id)
+    problem_id = g.problem_service.delete_problem(problem_id, g.data_dir)
     return jsonify({"problem_id": problem_id})
 
 @problem_bp.route("/<string:problem_id>", methods=["GET"])
 def query_problem(problem_id):
-    problem = g.problem_service.query_problem(problem_id)
+    problem = g.problem_service.query_problem(problem_id, g.data_dir)
+    print(f"Problem: {problem}\n\n\n\n\n\n\n")
     if problem is None:
         return jsonify({"error": "Problem not found"}), 404
     return jsonify(problem)
 
 @problem_bp.route("/<string:problem_id>", methods=["PUT"])
 def update_problem(problem_id):
-    problem = g.problem_service.query_problem(problem_id)
+    problem = g.problem_service.query_problem(problem_id, g.data_dir)
     if problem is None:
         return jsonify({"error": "Problem not found"}), 404
     data = request.get_json()  # Get the JSON payload
     problem_name = data.get("problem_name")
-    allow_submission = data.get("allow_submission")
+    allow_submissions = data.get("allow_submissions")
     start_time = data.get("start_time")
     deadline = data.get("deadline")
     subtasks = data.get('subtasks', [])
@@ -57,9 +58,9 @@ def update_problem(problem_id):
     new_playbooks = data.get('newPlaybooks', [])
     print("Subtasks: ", subtasks)
     print("Playbooks: ", playbooks)
-    problem_id = g.problem_service.update_problem(problem_id, problem_name, allow_submission, 
+    problem_id = g.problem_service.update_problem(problem_id, problem_name, allow_submissions, 
                                                     start_time, deadline, subtasks, playbooks, 
-                                                    new_subtasks, new_playbooks)
+                                                    new_subtasks, new_playbooks, g.data_dir)
     return jsonify({"problem_id": problem_id})
 
 

@@ -36,7 +36,7 @@ Flask-Bcrypt==1.0.1
 Flask-Cors==4.0.0
 pyjwt==2.8.0
 Flask-Login==0.6.3
-Flask-SQLAlchemy==3.1.1JWT
+Flask-SQLAlchemy==3.1.1
 gnupg==2.3.1
 google-api-core==2.18.0
 google-api-python-client==2.125.0

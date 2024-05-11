@@ -6,21 +6,6 @@ import authlib.integrations.base_client
 auth_bp = Blueprint('auth', __name__)
 auth_bp.secret_key = secrets.token_urlsafe(16)
 
-# @app.before_request
-# def load_user_identity():
-#     authorization_header = request.headers.get("Authorization")
-#     if authorization_header:
-#         token = authorization_header.replace('Bearer ', '', 1)
-#         g.user = auth_service.authenticate_token(token)
-#         if g.user is None:
-#             return
-#         extra = {
-#             "email": g.user["email"],
-#             "role": g.user["role"],
-#         }
-#         app.logger.info("User %s authenticated", g.user["email"], extra=extra)
-#     else:
-#         g.user = None
 
 @auth_bp.route("/get_login_url")
 def get_login_url():
@@ -36,8 +21,8 @@ def authorize():
         g.google_oauth.authorize_access_token()
         resp = g.google_oauth.get("userinfo")
         user_info = resp.json()
-        print(f'User info: {user_info}')
-        token = g.auth_service.issue_token(user_info)
+        print(f'User info: {user_info}\n\n\n\n\n\n\n')  # Debugging line to see what user_info contains
+        token = g.auth_service.issue_token(user_info)  # Pass user_info directly
         return token
     except authlib.integrations.base_client.errors.MismatchingStateError:
         return jsonify({"error": "MismatchingStateError"})

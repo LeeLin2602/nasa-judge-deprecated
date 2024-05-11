@@ -4,33 +4,8 @@
     "start_time": "2024-07-01",
     "deadline": "2024-07-15",
     "subtasks":[
-    {
-        "id": 1,
-        "name": "ping-test",
-        "content": "ping 8.8.8.8",
-        "points": 5
-    },
-    {
-        "id": 2,
-        "name": "ping-test",
-        "content": "ping 8.8.8.8",
-        "points": 95
-    },
-    {
-        "id": 3,
-        "name": "ping-test",
-        "content": "ping"
-    }
     ],
     "playbooks":[
-     {
-      "id": 1,
-      "content": "xxx"
-     },
-     {
-      "id": 2,
-      "content": "xxx"
-     }
     ],
     "newSubtasks":[
      {
@@ -46,11 +21,11 @@
     ],
     "newPlaybooks":[
     {
-        "name": "xxx",
+        "name": "cdf",
         "content": "xxx"
     },
     {
-        "name": "xxx",
+        "name": "abc",
         "content": "xxx"
     }
     ]
