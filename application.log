@@ -1,5 +1,4 @@
 werkzeug - WARNING -  * Debugger is active!
-werkzeug - INFO -  * Debugger PIN: 151-006-959
-root - ERROR - Session rollback due to exception: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on '172.21.21.2' ([Errno 113] No route to host)")
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-werkzeug - INFO - 127.0.0.1 - - [11/May/2024 23:07:06] "[35m[1mPOST /problems/ HTTP/1.1[0m" 500 -
+werkzeug - INFO -  * Debugger PIN: 322-269-627
+werkzeug - INFO - 127.0.0.1 - - [13/May/2024 19:58:11] "POST /problems/ HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [13/May/2024 19:58:19] "PUT /problems/4 HTTP/1.1" 200 -

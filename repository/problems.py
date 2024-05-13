@@ -20,22 +20,16 @@ class Problems:
 
     def query_problem(self, problem_id, data_dir):
         with managed_session(self.session_factory) as session:
-            problem = (
-                session.query(db.Problem).filter_by(id=problem_id, is_valid=True).first()
-            )
-            subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
-            print(f"Subtask path: {subtasks_path}\n\n\n\n\n")
-            os.makedirs(subtasks_path, exist_ok=True)   
-            playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
-            print(f"Playbook path: {playbooks_path}\n\n\n\n\n")
-            os.makedirs(playbooks_path, exist_ok=True)
+            problem = session.query(db.Problem).filter_by(id=problem_id, is_valid=True).first()
             if problem:
-                # playbook = self.query_playbook(13)
-                # print(f"Playbook: {playbook}\n\n\n\n\n")
-                subtasks_list = self.query_all_subtasks(problem_id, subtasks_path)
-                print(f"Subtasks: {subtasks_list}\n\n\n\n\n")
-                playbooks_list = self.query_all_playbooks(problem_id, playbooks_path)
-                print(f"Playbooks: {playbooks_list}\n\n\n\n\n")
+                subtasks_list = self.query_all_subtasks(problem_id, data_dir)
+                playbooks_list = self.query_all_playbooks(problem_id, data_dir)
+                # if subtasks_list:
+                #     subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
+                #     # os.makedirs(subtasks_path, exist_ok=True)
+                # if playbooks_list:
+                #     playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
+                    # os.makedirs(playbooks_path, exist_ok=True)
                 problem_data = {
                     "problem_name": problem.problem_name,
                     "created_time": problem.created_time,
@@ -44,10 +38,10 @@ class Problems:
                     "subtasks": subtasks_list,
                     "playbooks": playbooks_list,
                     "allow_submissions": problem.allow_submissions,
-                    # "is_valid": problem.is_valid 
                 }
                 return problem_data
-            return None
+        return None
+
 
     def del_problem(self, problem_id):
         with managed_session(self.session_factory) as session:
@@ -58,31 +52,21 @@ class Problems:
                 return problem.id
             return None
 
-    def update_problem(self, problem_id, problem_name, allow_submissions, 
-                                start_time, deadline, subtasks, playbooks, 
-                                new_subtasks, new_playbooks, data_dir):
+    def update_problem(self, problem_id, problem_name, allow_submissions, start_time, deadline, subtasks, playbooks, new_subtasks, new_playbooks, data_dir):
         with managed_session(self.session_factory) as session:
             problem = session.query(db.Problem).filter_by(id=problem_id).first()
             if problem:
-                # print("Problem ID: ", problem_id)
-                # print("Start time: ", start_time)
-                # print("Deadline: ", deadline)
                 problem.problem_name = problem_name
                 problem.allow_submissions = allow_submissions
                 problem.start_time = start_time
                 problem.deadline = deadline
 
-                # path of subtask scripts and playbooks
-                subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
-                print(f"Subtask path: {subtasks_path}\n\n\n\n\n")
-                os.makedirs(subtasks_path, exist_ok=True)   
-                playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
-                print(f"Playbook path: {playbooks_path}\n\n\n\n\n")
-                os.makedirs(playbooks_path, exist_ok=True)
-                # create_directory(subtasks_path)
-                # create_directory(playbooks_path)
-                # fetch existed subtasks
-                # this subtask is a subtask object in db
+                if subtasks or new_subtasks:
+                    subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
+                    os.makedirs(subtasks_path, exist_ok=True)
+                if playbooks or new_playbooks:
+                    playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
+                    os.makedirs(playbooks_path, exist_ok=True)
 
                 # existing_subtasks = {subtask.id: subtask for subtask in problem.subtasks}
                 existing_subtasks = {subtask['id']: subtask for subtask in self.query_all_subtasks(problem_id, subtasks_path)}
@@ -170,16 +154,17 @@ class Problems:
             ]
             return problem_data
     # subtask
-    def query_all_subtasks(self, problem_id, subtasks_path):
+    def query_all_subtasks(self, problem_id, data_dir):
         with managed_session(self.session_factory) as session:
             task_list = (
                 session.query(db.Subtask) \
                 .filter_by(problem_id=problem_id, is_valid=True) \
                 .all()
             )
-            # path of subtask scripts and playbooks
-            # subtasks_path = f"../data/subtask-scripts/{problem_id}"
-            os.makedirs(subtasks_path, exist_ok=True)
+            if task_list is None:
+                return []
+            subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
+            # os.makedirs(subtasks_path, exist_ok=True)
 
             task_data = []
             for task in task_list:
@@ -204,15 +189,17 @@ class Problems:
             # ]
             return task_data
     # playbook
-    def query_all_playbooks(self, problem_id, playbooks_path):
+    def query_all_playbooks(self, problem_id, data_dir):
         with managed_session(self.session_factory) as session:
             playbook_list = (
                 session.query(db.SubtaskPlaybook) \
                 .filter_by(problem_id=problem_id, is_valid=True) \
                 .all()
             )
-
-            os.makedirs(playbooks_path, exist_ok=True)
+            if playbook_list is None:
+                return []
+            # os.makedirs(playbooks_path, exist_ok=True)
+            playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
             playbook_data = []
             print(f"Playbook list: {playbook_list}\n\n\n\n\n")
             for playbook in playbook_list:
