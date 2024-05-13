@@ -69,7 +69,7 @@ class Problems:
                     os.makedirs(playbooks_path, exist_ok=True)
 
                 # existing_subtasks = {subtask.id: subtask for subtask in problem.subtasks}
-                existing_subtasks = {subtask['id']: subtask for subtask in self.query_all_subtasks(problem_id, subtasks_path)}
+                existing_subtasks = {subtask['id']: subtask for subtask in self.query_all_subtasks(problem_id, data_dir)}
                 
                 # Update existing subtasks
                 updated_subtask_ids = []
@@ -96,14 +96,14 @@ class Problems:
                 # this playbook is a playbook object in db
                 # existing_playbooks = {playbook.id: playbook for playbook in problem.playbooks}
                 
-                existing_playbooks = {playbook['id']: playbook for playbook in self.query_all_playbooks(problem_id, playbooks_path)}                
+                existing_playbooks = {playbook['id']: playbook for playbook in self.query_all_playbooks(problem_id, data_dir)}                
                 # Update existing playbooks
                 updated_playbook_ids = []
                 for playbook in playbooks:
                     playbook_id = playbook.get("id")
                     updated_playbook_ids.append(playbook_id)
                     if playbook_id in existing_playbooks:
-                        playbook_name = existing_playbooks[playbook_id].playbook_name
+                        playbook_name = existing_playbooks[playbook_id]['name']
                         playbook_content = playbook.get("content")
                         playbook_path = os.path.join(playbooks_path, f"{playbook_name}.yaml")
                         with open(playbook_path, 'w') as file:
@@ -209,6 +209,7 @@ class Problems:
                     content = file.read()
                 playbook_data.append({
                     "id": playbook.id,
+                    "name": playbook_name,
                     "content": content,
                 })
 
@@ -232,7 +233,7 @@ class Problems:
         with managed_session(self.session_factory) as session:
             task = session.query(db.Subtask).filter_by(id=task_id).first()
             if task:
-                task.is_valid = 0
+                task.is_valid = False
                 session.commit()
                 return task.id
             return None

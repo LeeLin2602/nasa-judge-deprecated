@@ -1,5 +1,5 @@
 from flask import url_for, jsonify, request, g, Blueprint, render_template
-
+from datetime import datetime
 # from service.problem_service import problem_service
 # from instance import problem_service
 
@@ -50,14 +50,21 @@ def update_problem(problem_id):
     data = request.get_json()  # Get the JSON payload
     problem_name = data.get("problem_name")
     allow_submissions = data.get("allow_submissions")
-    start_time = data.get("start_time")
-    deadline = data.get("deadline")
+    start_time_str = data.get("start_time")
+    deadline_str = data.get("deadline")
     subtasks = data.get('subtasks', [])
     playbooks = data.get('playbooks', [])
     new_subtasks = data.get('newSubtasks', [])
     new_playbooks = data.get('newPlaybooks', [])
+    if start_time_str:
+        start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
+    if deadline_str:
+        deadline = datetime.strptime(deadline_str, '%Y-%m-%d %H:%M:%S')
     print("Subtasks: ", subtasks)
     print("Playbooks: ", playbooks)
+    print("New problem: ", problem_name)
+    print("New start time: ", start_time)
+    print("New deadline: ", deadline)
     problem_id = g.problem_service.update_problem(problem_id, problem_name, allow_submissions, 
                                                     start_time, deadline, subtasks, playbooks, 
                                                     new_subtasks, new_playbooks, g.data_dir)
