@@ -40,23 +40,6 @@ class ProblemService:
     def query_all_problems(self):
         problems = self.problems.query_all_problems()
         return problems
-    
-    # def update_problem(self, problem_id, problem_name, allow_submissions, 
-    #                             start_time, deadline, subtasks, playbooks, 
-    #                             new_subtasks, new_playbooks, data_dir):
-        
-    #     problem = self.problems.query_problem(problem_id, data_dir)
-    #     if not problem:
-    #         self.logger.error(f"Problem not found: {problem_id}")
-    #         return None
-    #     print('\n\nIN SERVICE: ')
-    #     print(f'start_time: {start_time}')
-    #     print(f'deadline: {deadline}')
-    #     print(f"Problem name: {problem_name}\n\n\n")
-    #     self.problems.update_problem(problem_id, problem_name, allow_submissions, 
-    #                                     start_time, deadline, subtasks, playbooks, 
-    #                                     new_subtasks, new_playbooks, data_dir)
-    #     return problem_id
 
     def update_problem(self, problem_id, problem_name, allow_submissions, start_time, deadline, subtasks, playbooks, new_subtasks, new_playbooks, data_dir):
         """
