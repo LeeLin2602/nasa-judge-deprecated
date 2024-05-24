@@ -60,9 +60,10 @@ def update_problem(problem_id):
         start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
     if deadline_str:
         deadline = datetime.strptime(deadline_str, '%Y-%m-%d %H:%M:%S')
-    print("Subtasks: ", subtasks)
-    print("Playbooks: ", playbooks)
+    # print("Subtasks: ", subtasks)
+    # print("Playbooks: ", playbooks)
     print("New problem: ", problem_name)
+    print("New allow submissions: ", allow_submissions)
     print("New start time: ", start_time)
     print("New deadline: ", deadline)
     problem_id = g.problem_service.update_problem(problem_id, problem_name, allow_submissions, 

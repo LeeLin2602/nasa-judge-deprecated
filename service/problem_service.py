@@ -1,5 +1,6 @@
 from datetime import timezone, datetime
 import jwt
+from utils import managed_session, create_directory
 
 class ProblemService:
     def __init__(self, logger, jwt_secret, problems, subtasks, playbooks):
@@ -40,9 +41,24 @@ class ProblemService:
         problems = self.problems.query_all_problems()
         return problems
     
-    def update_problem(self, problem_id, problem_name, allow_submissions, 
-                                start_time, deadline, subtasks, playbooks, 
-                                new_subtasks, new_playbooks, data_dir):
+    # def update_problem(self, problem_id, problem_name, allow_submissions, 
+    #                             start_time, deadline, subtasks, playbooks, 
+    #                             new_subtasks, new_playbooks, data_dir):
+        
+    #     problem = self.problems.query_problem(problem_id, data_dir)
+    #     if not problem:
+    #         self.logger.error(f"Problem not found: {problem_id}")
+    #         return None
+    #     print('\n\nIN SERVICE: ')
+    #     print(f'start_time: {start_time}')
+    #     print(f'deadline: {deadline}')
+    #     print(f"Problem name: {problem_name}\n\n\n")
+    #     self.problems.update_problem(problem_id, problem_name, allow_submissions, 
+    #                                     start_time, deadline, subtasks, playbooks, 
+    #                                     new_subtasks, new_playbooks, data_dir)
+    #     return problem_id
+
+    def update_problem(self, problem_id, problem_name, allow_submissions, start_time, deadline, subtasks, playbooks, new_subtasks, new_playbooks, data_dir):
         """
         Args:
         subtasks: list of json
@@ -52,10 +68,16 @@ class ProblemService:
         if not problem:
             self.logger.error(f"Problem not found: {problem_id}")
             return None
-    
-        self.problems.update_problem(problem_id, problem_name, allow_submissions, 
-                                        start_time, deadline, subtasks, playbooks, 
-                                        new_subtasks, new_playbooks, data_dir)
+        print('\n\nIN SERVICE: ')
+        print(f'start_time: {start_time}')
+        print(f'deadline: {deadline}')
+        print(f"Problem name: {problem_name}\n\n\n")
+        success = self.problems.update_problem_details(problem_id, problem_name, allow_submissions, start_time, deadline)
+        print(f"Success: {success}\n\n\n\n")
+        if not success:
+            return None
+        self.problems.update_subtasks(problem_id, subtasks, new_subtasks, data_dir)
+        self.problems.update_playbooks(problem_id, playbooks, new_playbooks, data_dir)
         return problem_id
     
     def query_all_subtasks(self, problem_id):

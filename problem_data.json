@@ -1,8 +1,8 @@
 {
     "problem_name": "Wesley",
     "allow_submissions": true,
-    "start_time": "2024-07-01",
-    "deadline": "2024-07-15",
+    "start_time": "2024-07-01 19:12:13",
+    "deadline": "2024-07-15 20:12:13",
     "subtasks":[
     {
         "id": 1,
@@ -15,11 +15,6 @@
         "name": "ping-test",
         "content": "ping 8.8.8.8",
         "points": 95
-    },
-    {
-        "id": 3,
-        "name": "ping-test",
-        "content": "ping"
     }
     ],
     "playbooks":[
@@ -46,11 +41,11 @@
     ],
     "newPlaybooks":[
     {
-        "name": "xxx",
+        "name": "asc",
         "content": "xxx"
     },
     {
-        "name": "xxx",
+        "name": "sdg",
         "content": "xxx"
     }
     ]

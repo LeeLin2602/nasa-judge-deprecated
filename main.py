@@ -45,7 +45,7 @@ problem_service = ProblemService(logging, config.JWT_SECRET, problems, subtasks,
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(project_dir, "data")
-print(f"Data dir: {data_dir}\n\n\n\n\n\n")
+# print(f"Data dir: {data_dir}\n\n\n\n\n\n")
 # playbooks_path = f"./playbooks/1/"
 # os.makedirs(playbooks_path, exist_ok=True)
 # file_path = os.path.join(playbooks_path, "test.yaml")

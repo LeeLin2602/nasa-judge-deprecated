@@ -1,2 +1,5 @@
 werkzeug - WARNING -  * Debugger is active!
-werkzeug - INFO -  * Debugger PIN: 662-557-590
+werkzeug - INFO -  * Debugger PIN: 250-596-082
+werkzeug - INFO - 127.0.0.1 - - [23/May/2024 17:17:04] "POST /problems/ HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [23/May/2024 17:17:08] "PUT /problems/7 HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [23/May/2024 17:17:10] "GET /problems/7 HTTP/1.1" 200 -
