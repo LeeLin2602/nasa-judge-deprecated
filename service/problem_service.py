@@ -1,20 +1,11 @@
-from datetime import datetime  # Standard imports first
-import logging  # Import logging to use in the service class
-
-# Removed unused imports
-# import jwt
-# from datetime import timezone
-# from utils import managed_session, create_directory
-
-
 class ProblemService:
     def __init__(self, logger, jwt_secret, problems):
         self.logger = logger
         self.secret = jwt_secret
         self.problems = problems
 
-    def create_problem(self, problem_name="newProblem", data_dir=None):
-        problem = self.problems.query_problem(problem_name, data_dir)
+    def create_problem(self, problem_name="newProblem"):
+        problem = self.problems.query_problem(problem_name)
         if problem:
             self.logger.error("Problem already exists: %s", problem_name)
             return None
@@ -22,8 +13,8 @@ class ProblemService:
         problem_id = self.problems.create_problem(problem_name)
         return problem_id
 
-    def delete_problem(self, problem_id, data_dir):
-        problem = self.problems.query_problem(problem_id, data_dir)
+    def delete_problem(self, problem_id):
+        problem = self.problems.query_problem(problem_id)
         if not problem:
             self.logger.error("Problem not found: %s", problem_id)
             return None
@@ -31,8 +22,8 @@ class ProblemService:
         self.problems.del_problem(problem_id)
         return problem_id
 
-    def query_problem(self, problem_id, data_dir):
-        problem = self.problems.query_problem(problem_id, data_dir)
+    def query_problem(self, problem_id):
+        problem = self.problems.query_problem(problem_id)
         if not problem:
             self.logger.error("Problem not found: %s", problem_id)
             return None
@@ -42,25 +33,27 @@ class ProblemService:
     def query_all_problems(self):
         return self.problems.query_all_problems()
 
-    def update_problem(self, problem_id, problem_name, allow_submissions, 
-                        start_time, deadline, subtasks, playbooks, new_subtasks, 
-                        new_playbooks, data_dir):
+    def update_problem(self, problem_id, problem_name, start_time, deadline):
         """
         Args:
         subtasks: list of json
         playbooks: list of json
         """
-        problem = self.problems.query_problem(problem_id, data_dir)
+        problem = self.problems.query_problem(problem_id)
         if not problem:
             self.logger.error("Problem not found: %s", problem_id)
             return None
-        success = self.problems.update_problem_details(problem_id, problem_name, 
-                                                        allow_submissions, start_time, deadline)
+        success = self.problems.update_problem_details(
+            problem_id, problem_name, start_time, deadline)
         if not success:
             return None
-        self.problems.update_subtasks(problem_id, subtasks, new_subtasks, data_dir)
-        self.problems.update_playbooks(problem_id, playbooks, new_playbooks, data_dir)
         return problem_id
+
+    def update_subtasks(self, problem_id, subtasks, new_subtasks):
+        self.problems.update_subtasks(problem_id, subtasks, new_subtasks)
+
+    def update_playbooks(self, problem_id, playbooks, new_playbooks):
+        self.problems.update_playbooks(problem_id, playbooks, new_playbooks)
 
     def query_all_subtasks(self, problem_id):
         return self.problems.query_all_subtasks(problem_id)

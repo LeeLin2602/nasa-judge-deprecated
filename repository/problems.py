@@ -1,12 +1,14 @@
 import os  # Standard imports first
+from datetime import datetime
 from sqlalchemy.orm import scoped_session, sessionmaker  # Third-party imports
 from utils import managed_session  # First-party imports
 from models import db
 
 class Problems:
-    def __init__(self, sql_engine):
+    def __init__(self, sql_engine, data_dir):
         self.sql_engine = sql_engine
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
+        self.data_dir = data_dir
 
     def create_problem(self, problem_name="newProblem"):
         with managed_session(self.session_factory) as session:
@@ -15,12 +17,12 @@ class Problems:
             session.commit()
             return problem.id
 
-    def query_problem(self, problem_id, data_dir):
+    def query_problem(self, problem_id):
         with managed_session(self.session_factory) as session:
             problem = session.query(db.Problem).filter_by(id=problem_id, is_valid=True).first()
             if problem:
-                subtasks_list = self.query_all_subtasks(problem_id, data_dir)
-                playbooks_list = self.query_all_playbooks(problem_id, data_dir)
+                subtasks_list = self.query_all_subtasks(problem_id)
+                playbooks_list = self.query_all_playbooks(problem_id)
                 problem_data = {
                     "problem_name": problem.problem_name,
                     "created_time": problem.created_time,
@@ -42,7 +44,13 @@ class Problems:
                 return problem.id
             return None
 
-    def update_problem_details(self, problem_id, problem_name, allow_submissions, start_time, deadline):
+    def update_problem_details(self, problem_id, problem_name, start_time, deadline):
+        current_time = datetime.now()
+        allow_submissions = False
+
+        if start_time <= current_time < deadline:
+            allow_submissions = True
+
         with managed_session(self.session_factory) as session:
             problem = session.query(db.Problem).filter_by(id=problem_id).first()
             if problem:
@@ -54,101 +62,117 @@ class Problems:
                 return True
         return False
 
-    def update_subtasks(self, problem_id, subtasks, new_subtasks, data_dir):
+    def update_subtasks(self, problem_id, subtasks, new_subtasks):
         if subtasks or new_subtasks:
-            subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
+            subtasks_path = os.path.join(self.data_dir, f"subtask-scripts/{problem_id}")
             os.makedirs(subtasks_path, exist_ok=True)
 
-        existing_subtasks = {subtask['id']: subtask for subtask in self.query_all_subtasks(problem_id, data_dir)}
+        existing_subtasks = {
+            subtask['id']: subtask for subtask in self.query_all_subtasks(problem_id)
+        }
         updated_subtask_ids = []
         for subtask in subtasks:
             subtask_id = subtask.get("id")
             updated_subtask_ids.append(subtask_id)
             if subtask_id in existing_subtasks:
-                subtask_name = subtask.get("name")
-                subtask_content = subtask.get("content")
-                subtask_points = subtask.get("points")
-                self.update_subtask(subtask_id, subtask_name, subtask_content, subtask_points)
-                subtask_path = os.path.join(subtasks_path, f"{subtask_id}.sh")
-                with open(subtask_path, 'w', encoding='utf-8') as file:
-                    file.write(subtask_content)
+                self.update_subtask(
+                        subtask_id,
+                        subtask.get("name"),
+                        subtask.get("points"))
+                with open(os.path.join(subtasks_path, f"{subtask_id}.sh"), \
+                            'w', encoding='utf-8') as file:
+                    file.write(subtask.get("content"))
 
-        deleted_subtask_ids = set(existing_subtasks.keys()) - set(updated_subtask_ids)
-        for subtask_id in deleted_subtask_ids:
+        for subtask_id in set(existing_subtasks.keys()) - set(updated_subtask_ids):
             self.del_subtask(subtask_id)
 
         for new_subtask in new_subtasks:
-            new_subtask_name = new_subtask.get("name")
-            new_subtask_content = new_subtask.get("content")
-            new_subtask_points = new_subtask.get("points")
-            new_subtask_id = self.create_subtask(problem_id, new_subtask_name, new_subtask_points)
-            new_script_path = os.path.join(subtasks_path, f"{new_subtask_id}.sh")
-            with open(new_script_path, 'w', encoding='utf-8') as file:
-                file.write(new_subtask_content)
+            new_subtask_id = self.create_subtask(
+                                problem_id,
+                                new_subtask.get("name"),
+                                new_subtask.get("points"))
 
-    def update_playbooks(self, problem_id, playbooks, new_playbooks, data_dir):
+            with open(os.path.join(subtasks_path, f"{new_subtask_id}.sh"), \
+                        'w', encoding='utf-8') as file:
+                file.write(new_subtask.get("content"))
+
+    def update_playbooks(self, problem_id, playbooks, new_playbooks):
         if playbooks or new_playbooks:
-            playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
+            playbooks_path = os.path.join(
+                                self.data_dir, f"playbooks/{problem_id}"
+                            )
             os.makedirs(playbooks_path, exist_ok=True)
 
-        existing_playbooks = {playbook['id']: playbook for playbook in self.query_all_playbooks(problem_id, data_dir)}
+        existing_playbooks = {
+            playbook['id']: playbook for playbook in self.query_all_playbooks(problem_id)
+        }
         updated_playbook_ids = []
         for playbook in playbooks:
             playbook_id = playbook.get("id")
             updated_playbook_ids.append(playbook_id)
             if playbook_id in existing_playbooks:
-                playbook_name = existing_playbooks[playbook_id]['name']
-                playbook_content = playbook.get("content")
-                playbook_path = os.path.join(playbooks_path, f"{playbook_name}.yaml")
-                with open(playbook_path, 'w', encoding='utf-8') as file:
-                    file.write(playbook_content)
+                with open(os.path.join(
+                                playbooks_path,
+                                f"{existing_playbooks[playbook_id]['name']}.yaml"), \
+                            'w', encoding='utf-8') as file:
+                    file.write(playbook.get("content"))
 
-        deleted_playbook_ids = set(existing_playbooks.keys()) - set(updated_playbook_ids)
-        for playbook_id in deleted_playbook_ids:
+        for playbook_id in set(existing_playbooks.keys()) - set(updated_playbook_ids):
             self.del_playbook(playbook_id)
 
         for new_playbook in new_playbooks:
-            new_playbook_name = new_playbook.get("name")
-            new_playbook_content = new_playbook.get("content")
-            new_playbook_id = self.create_playbook(problem_id, new_playbook_name)
-            new_playbook_path = os.path.join(playbooks_path, f"{new_playbook_name}.yaml")
-            with open(new_playbook_path, 'w', encoding='utf-8') as file:
-                file.write(new_playbook_content)
+            with open(os.path.join(playbooks_path, new_playbook.get("name")+".yaml"), \
+                        'w', encoding='utf-8') as file:
+                file.write(new_playbook.get("content"))
 
     def query_all_problems(self):
         with managed_session(self.session_factory) as session:
             problems = session.query(db.Problem).filter_by(is_valid=True).all()
-            problem_data = [{"id": problem.id, "problem_name": problem.problem_name} for problem in problems]
+            problem_data = [
+                {"id": problem.id, "problem_name": problem.problem_name} for problem in problems
+            ]
             return problem_data
 
-    def query_all_subtasks(self, problem_id, data_dir):
+    def query_all_subtasks(self, problem_id):
         with managed_session(self.session_factory) as session:
-            task_list = session.query(db.Subtask).filter_by(problem_id=problem_id, is_valid=True).all()
+            task_list = session.query(db.Subtask) \
+                        .filter_by(problem_id=problem_id, is_valid=True) \
+                        .all()
             if task_list is None:
                 return []
-            subtasks_path = os.path.join(data_dir, f"subtask-scripts/{problem_id}")
+            subtasks_path = os.path.join(self.data_dir, f"subtask-scripts/{problem_id}")
             task_data = []
             for task in task_list:
                 task_id = task.id
                 subtask_path = os.path.join(subtasks_path, f"{task_id}.sh")
                 with open(subtask_path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                task_data.append({"id": task_id, "name": task.task_name, "content": content, "points": task.points})
+                task_data.append({
+                    "id": task_id, 
+                    "name": task.task_name, 
+                    "content": content, 
+                    "points": task.points})
             return task_data
 
-    def query_all_playbooks(self, problem_id, data_dir):
+    def query_all_playbooks(self, problem_id):
         with managed_session(self.session_factory) as session:
-            playbook_list = session.query(db.SubtaskPlaybook).filter_by(problem_id=problem_id, is_valid=True).all()
+            playbook_list = session.query(db.SubtaskPlaybook) \
+                            .filter_by(problem_id=problem_id, is_valid=True) \
+                            .all()
             if playbook_list is None:
                 return []
-            playbooks_path = os.path.join(data_dir, f"playbooks/{problem_id}")
+            playbooks_path = os.path.join(self.data_dir, f"playbooks/{problem_id}")
             playbook_data = []
             for playbook in playbook_list:
                 playbook_name = playbook.playbook_name
                 playbook_path = os.path.join(playbooks_path, f"{playbook_name}.yaml")
                 with open(playbook_path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                playbook_data.append({"id": playbook.id, "name": playbook_name, "content": content})
+                playbook_data.append({
+                        "id": playbook.id, 
+                        "name": playbook_name, 
+                        "content": content
+                    })
             return playbook_data
 
     def create_subtask(self, problem_id, task_name, points):
@@ -189,11 +213,6 @@ class Problems:
                 if points is not None:
                     subtask.points = points
                 session.commit()
-                # return {
-                #     "id": subtask.id,
-                #     "task_name": subtask.task_name,
-                #     "points": subtask.points
-                # }
                 return subtask.id
         return None
 

@@ -35,20 +35,11 @@ profiles = Profiles(SQL_ENGINE)
 # print("\n\n\n\n\n\n\n")
 users = Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
-# subtasks = Subtasks(SQL_ENGINE)
-problems = Problems(SQL_ENGINE)
-# subtask_playbooks = SubtaskPlaybooks(SQL_ENGINE)
-
-problem_service = ProblemService(logging, config.JWT_SECRET, problems)
-
 project_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(project_dir, "data")
-# print(f"Data dir: {data_dir}\n\n\n\n\n\n")
-# playbooks_path = f"./playbooks/1/"
-# os.makedirs(playbooks_path, exist_ok=True)
-# file_path = os.path.join(playbooks_path, "test.yaml")
-# with open(file_path, "w") as f:
-#     f.write("Hello, World!")
+problems = Problems(SQL_ENGINE, data_dir)
+
+problem_service = ProblemService(logging, config.JWT_SECRET, problems)
 
 @app.before_request
 def load_user_identity():
