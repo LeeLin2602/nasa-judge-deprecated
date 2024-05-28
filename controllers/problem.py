@@ -45,9 +45,9 @@ def update_problem(problem_id):
     deadline = datetime.strptime(deadline_str, '%Y-%m-%d %H:%M:%S') if deadline_str else None
 
     problem_id = g.problem_service.update_problem(
-                                        problem_id, 
+                                        problem_id,
                                         problem_name,
-                                        start_time, 
+                                        start_time,
                                         deadline)
     g.problem_service.update_subtasks(problem_id, subtasks, new_subtasks)
     g.problem_service.update_playbooks(problem_id, playbooks, new_playbooks)
