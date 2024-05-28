@@ -1,15 +1,13 @@
-from flask import Flask
+import logging
+import os
+from flask import Flask, request, g
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy import create_engine
-import logging
 import config
 
-from models import wg
-from flask import url_for, jsonify, request, g
-from repository import Users, Profiles, Problems, Subtasks, SubtaskPlaybooks
+from repository import Users, Profiles, Problems
 from service import AuthService, ProblemService
-import secrets
-import os
+
 
 app = Flask(__name__)
 # app.secret_key = secrets.token_urlsafe(16)
@@ -37,11 +35,11 @@ profiles = Profiles(SQL_ENGINE)
 # print("\n\n\n\n\n\n\n")
 users = Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
+# subtasks = Subtasks(SQL_ENGINE)
 problems = Problems(SQL_ENGINE)
-subtasks = Subtasks(SQL_ENGINE)
-subtask_playbooks = SubtaskPlaybooks(SQL_ENGINE)
+# subtask_playbooks = SubtaskPlaybooks(SQL_ENGINE)
 
-problem_service = ProblemService(logging, config.JWT_SECRET, problems, subtasks, subtask_playbooks)
+problem_service = ProblemService(logging, config.JWT_SECRET, problems)
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(project_dir, "data")
@@ -58,8 +56,6 @@ def load_user_identity():
     g.users = users
     g.profiles = profiles
     g.problems = problems
-    g.subtasks = subtasks
-    g.subtask_playbooks = subtask_playbooks
     g.auth_service = auth_service
     g.problem_service = problem_service
     g.google_oauth = google_oauth
@@ -86,3 +82,4 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(problem_bp, url_prefix="/problems")
 if __name__ == "__main__":
     app.run(debug=True)
+    

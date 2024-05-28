@@ -1,5 +1,5 @@
 import secrets
-from flask import url_for, jsonify, request, g, Blueprint
+from flask import url_for, jsonify, g, Blueprint
 
 import authlib.integrations.base_client
 
@@ -21,7 +21,8 @@ def authorize():
         g.google_oauth.authorize_access_token()
         resp = g.google_oauth.get("userinfo")
         user_info = resp.json()
-        print(f'User info: {user_info}\n\n\n\n\n\n\n')  # Debugging line to see what user_info contains
+        # Debugging line to see what user_info contains
+        print(f'User info: {user_info}\n')
         token = g.auth_service.issue_token(user_info)  # Pass user_info directly
         return token
     except authlib.integrations.base_client.errors.MismatchingStateError:
@@ -35,3 +36,4 @@ def whoami():
             "role": g.user["role"],
         }), 200
     return jsonify({"error": "Unauthorized"}), 401
+    

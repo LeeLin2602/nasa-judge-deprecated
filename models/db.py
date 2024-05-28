@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, ForeignKey, TIMESTAMP
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
@@ -76,3 +76,4 @@ class SubtaskPlaybook(Base):
     is_valid = Column(Boolean, default=True)
     playbook_name = Column(String(255))
     problem = relationship('Problem', back_populates='playbooks')
+    

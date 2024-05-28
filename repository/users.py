@@ -16,7 +16,7 @@ class Users:
                 user = db.User(name=name, email=email)
                 session.add(user)
                 session.commit()
-                
+
     def query_user(self, email):
         with managed_session(self.session_factory) as session:
             user = session.query(db.User).filter_by(email=email).first()

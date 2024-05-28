@@ -8,6 +8,6 @@ logging.basicConfig(level=logging.DEBUG, filename='application.log', filemode='w
 def create_directory(path):
     try:
         os.makedirs(path, exist_ok=True)
-        logging.info(f"Successfully created/accessed the directory {path}")
-    except Exception as e:
-        logging.error(f"Failed to create the directory {path}: {e}")
+        logging.info("Successfully created/accessed the directory %s", path)
+    except OSError as e:
+        logging.error("Failed to create the directory %s: %s", path, e)
