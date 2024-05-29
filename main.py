@@ -60,8 +60,9 @@ def load_user_identity():
         extra = {
             "email": g.user["email"],
             "role": g.user["role"],
+            "uid": g.user["uid"]
         }
-        app.logger.info("User %s authenticated", g.user["email"], extra=extra)
+        app.logger.info("User %s authenticated", g.user["email"], g.user["uid"], g.user["email"], extra=extra)
     else:
         g.user = None
 
