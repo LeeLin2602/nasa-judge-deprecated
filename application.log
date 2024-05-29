@@ -1,10 +1,14 @@
 werkzeug - WARNING -  * Debugger is active!
-werkzeug - INFO -  * Debugger PIN: 250-596-082
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:05:54] "PUT /problems/14 HTTP/1.1" 200 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:05:56] "GET /problems/14 HTTP/1.1" 200 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:01] "[31m[1mPOST /problems/14 HTTP/1.1[0m" 405 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:05] "POST /problems/ HTTP/1.1" 200 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:14] "[31m[1mPUT /problems/ HTTP/1.1[0m" 405 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:17] "POST /problems/ HTTP/1.1" 200 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:23] "PUT /problems/16 HTTP/1.1" 200 -
-werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:25] "GET /problems/16 HTTP/1.1" 200 -
+werkzeug - INFO -  * Debugger PIN: 188-327-134
+urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): accounts.google.com:443
+urllib3.connectionpool - DEBUG - https://accounts.google.com:443 "GET /.well-known/openid-configuration HTTP/1.1" 200 460
+werkzeug - INFO - 127.0.0.1 - - [29/May/2024 22:58:32] "GET /auth/get_login_url HTTP/1.1" 200 -
+urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): oauth2.googleapis.com:443
+urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): www.googleapis.com:443
+urllib3.connectionpool - DEBUG - https://www.googleapis.com:443 "GET /oauth2/v3/certs HTTP/1.1" 200 744
+urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): www.googleapis.com:443
+urllib3.connectionpool - DEBUG - https://www.googleapis.com:443 "GET /oauth2/v1/userinfo HTTP/1.1" 200 None
+werkzeug - INFO - 127.0.0.1 - - [29/May/2024 22:58:37] "GET /auth/authorize?state=YJlcztXtNt13JcMFqnAKUn4JK9n7P8&code=4/0AdLIrYcLXDKYMPW9Qh17o18fKkOUUvHLi9Noq0fLN3iw5oCIT1fiz5S8mjs8G61__duOHg&scope=email%20profile%20openid%20https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email&authuser=0&prompt=consent HTTP/1.1" 200 -
+main - INFO - User wesleyshi0321@gmail.com authenticated, 1 user
+werkzeug - INFO - 127.0.0.1 - - [29/May/2024 22:58:56] "POST /wg/profiles HTTP/1.1" 200 -
