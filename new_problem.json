@@ -1,0 +1,31 @@
+{
+    "problem_name": "Wesley",
+    "start_time": "2024-07-01 20:10:01",
+    "deadline": "2024-07-15 20:10:40",
+    "subtasks":[
+    ],
+    "playbooks":[
+    ],
+    "newSubtasks":[
+     {
+      "name": "ping-test",
+      "content": "ping 8.8.8.8",
+      "points": 5
+     },
+     {
+      "name": "ping-test",
+       "content": "ping 8.8.8.8",
+       "points": 95
+     }
+    ],
+    "newPlaybooks":[
+    {
+        "name": "cdf",
+        "content": "xxx"
+    },
+    {
+        "name": "abc",
+        "content": "xxx"
+    }
+    ]
+}

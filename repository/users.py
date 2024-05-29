@@ -15,6 +15,7 @@ class Users:
             if not user:
                 user = db.User(name=name, email=email)
                 session.add(user)
+                session.commit()
 
     def query_user(self, email):
         with managed_session(self.session_factory) as session:

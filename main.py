@@ -1,15 +1,19 @@
 import logging
-from sqlalchemy import create_engine
-from flask import Flask
+import os
+from flask import Flask, request, g
 from authlib.integrations.flask_client import OAuth
-
+from sqlalchemy import create_engine
 import config
-from repository import users
-from service import AuthService
+
+from repository import Users, Profiles, Problems
+from service import AuthService, ProblemService
 
 
 app = Flask(__name__)
+# app.secret_key = secrets.token_urlsafe(16)
+app.secret_key = config.SECRET_KEY
 
+# Initialize OAuth with app
 oauth = OAuth(app)
 google_oauth = oauth.register(
     name="google",
@@ -25,13 +29,48 @@ connection_string = (
     f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
     f"@{config.MYSQL_HOST}/{config.MYSQL_DB}"
 )
-
 SQL_ENGINE = create_engine(connection_string)
-
-users = users.Users(SQL_ENGINE)
+profiles = Profiles(SQL_ENGINE)
+# print(wg.generate_wireguard_config(profiles.add_profile()))
+# print("\n\n\n\n\n\n\n")
+users = Users(SQL_ENGINE)
 auth_service = AuthService(logging, config.JWT_SECRET, users)
+project_dir = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.join(project_dir, "data")
+problems = Problems(SQL_ENGINE, data_dir)
 
-from controllers import auth # pylint: disable=wrong-import-position, unused-import, cyclic-import
+problem_service = ProblemService(logging, config.JWT_SECRET, problems)
 
+@app.before_request
+def load_user_identity():
+    authorization_header = request.headers.get("Authorization")
+    g.users = users
+    g.profiles = profiles
+    g.problems = problems
+    g.auth_service = auth_service
+    g.problem_service = problem_service
+    g.google_oauth = google_oauth
+    g.project_dir = project_dir
+    g.data_dir = data_dir
+    if authorization_header:
+        token = authorization_header.replace('Bearer ', '', 1)
+        g.user = auth_service.authenticate_token(token)
+        if g.user is None:
+            return
+        extra = {
+            "email": g.user["email"],
+            "role": g.user["role"],
+        }
+        app.logger.info("User %s authenticated", g.user["email"], extra=extra)
+    else:
+        g.user = None
+
+
+
+from controllers import auth_bp, problem_bp # pylint: disable=wrong-import-position, unused-import, cyclic-import
+
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(problem_bp, url_prefix="/problems")
 if __name__ == "__main__":
     app.run(debug=True)
+    

@@ -1,0 +1,10 @@
+werkzeug - WARNING -  * Debugger is active!
+werkzeug - INFO -  * Debugger PIN: 250-596-082
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:05:54] "PUT /problems/14 HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:05:56] "GET /problems/14 HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:01] "[31m[1mPOST /problems/14 HTTP/1.1[0m" 405 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:05] "POST /problems/ HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:14] "[31m[1mPUT /problems/ HTTP/1.1[0m" 405 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:17] "POST /problems/ HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:23] "PUT /problems/16 HTTP/1.1" 200 -
+werkzeug - INFO - 127.0.0.1 - - [28/May/2024 15:06:25] "GET /problems/16 HTTP/1.1" 200 -

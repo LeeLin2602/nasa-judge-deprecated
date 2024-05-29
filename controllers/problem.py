@@ -1,38 +1,62 @@
-from flask import url_for, jsonify, request, g
+from datetime import datetime  # Standard imports first
+from flask import jsonify, request, g, Blueprint  # Third-party imports
 
-from main import app
-from service import ProblemService
+problem_bp = Blueprint('problem', __name__)
 
-# check user role at here 
-# parse json
 
-@app.route("/create_problem", methods=["POST"])
-def create_problem(problem_name, start_time, deadline):
-    problem_id = ProblemService.create_problem(problem_name, start_time, deadline)
+@problem_bp.route("/", methods=["POST"])
+def create_problem():
+    problem_id = g.problem_service.create_problem("New Problem")
     return jsonify({"problem_id": problem_id})
 
-@app.route("/delete_problem", method=["DELETE"])
-def delete_problem():
-    problem_name = request.json.get("problem_name")
-    problem_name = ProblemService.delete_problem(problem_name)
-    return jsonify({"problem_name": problem_name})
 
-@app.route("/query_problem", method=["GET"])
-def query_problem():
-    problem_name = request.json.get("problem_name")
-    problem = ProblemService.query_problem(problem_name)
+@problem_bp.route("/<string:problem_id>", methods=["DELETE"])
+def delete_problem(problem_id):
+    problem = g.problem_service.query_problem(problem_id)
+    if problem is None:
+        return jsonify({"error": "Problem not found"}), 404
+    problem_id = g.problem_service.delete_problem(problem_id)
+    return jsonify({"problem_id": problem_id})
+
+
+@problem_bp.route("/<string:problem_id>", methods=["GET"])
+def query_problem(problem_id):
+    problem = g.problem_service.query_problem(problem_id)
+    if problem is None:
+        return jsonify({"error": "Problem not found"}), 404
     return jsonify(problem)
 
-@app.route("/query_all_problems", method=["GET"])
-def query_all_problems():
-    problems = ProblemService.query_all_problems()
-    return jsonify(problems)
 
-@app.route("/update_problem", method=["PUT"])
-def update_problem():
-    problem_id = request.json.get("problem_id")
-    problem_name = request.json.get("problem_name")
-    start_time = request.json.get("start_time")
-    deadline = request.json.get("deadline")
-    problem_id = ProblemService.update_problem(problem_id, problem_name, start_time, deadline)
+@problem_bp.route("/<string:problem_id>", methods=["PUT"])
+def update_problem(problem_id):
+    problem = g.problem_service.query_problem(problem_id)
+    if problem is None:
+        return jsonify({"error": "Problem not found"}), 404
+    data = request.get_json()  # Get the JSON payload
+    problem_name = data.get("problem_name")
+    # allow_submissions = data.get("allow_submissions")
+    start_time_str = data.get("start_time")
+    deadline_str = data.get("deadline")
+    subtasks = data.get('subtasks', [])
+    playbooks = data.get('playbooks', [])
+    new_subtasks = data.get('newSubtasks', [])
+    new_playbooks = data.get('newPlaybooks', [])
+    start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S') if start_time_str else None
+    deadline = datetime.strptime(deadline_str, '%Y-%m-%d %H:%M:%S') if deadline_str else None
+
+    problem_id = g.problem_service.update_problem(
+                                        problem_id,
+                                        problem_name,
+                                        start_time,
+                                        deadline)
+    g.problem_service.update_subtasks(problem_id, subtasks, new_subtasks)
+    g.problem_service.update_playbooks(problem_id, playbooks, new_playbooks)
     return jsonify({"problem_id": problem_id})
+
+
+@problem_bp.route("/all_problems", methods=["GET"])
+def query_all_problems():
+    problems = g.problem_service.query_all_problems()
+    if not problems:
+        return jsonify({"error": "No problem is found"}), 404
+    return jsonify(problems)

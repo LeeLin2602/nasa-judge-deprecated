@@ -7,7 +7,6 @@ def managed_session(session_factory):
     session = session_factory()
     try:
         yield session
-        session.commit()
     except Exception as e:
         session.rollback()
         logging.error("Session rollback due to exception: %s", e)
