@@ -4,3 +4,6 @@ __pycache__
 venv
 clientscript.json
 .vscode
+__pycache__
+application.log
+
