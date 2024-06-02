@@ -25,22 +25,6 @@ google_oauth = oauth.register(
     server_metadata_url=config.GOOGLE_DISCOVERY_URL,
 )
 
-connection_string = (
-    f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
-    f"@{config.MYSQL_HOST}/{config.MYSQL_DB}"
-)
-SQL_ENGINE = create_engine(connection_string)
-profiles = Profiles(SQL_ENGINE)
-# print(wg.generate_wireguard_config(profiles.add_profile()))
-# print("\n\n\n\n\n\n\n")
-users = Users(SQL_ENGINE)
-auth_service = AuthService(logging, config.JWT_SECRET, users)
-project_dir = os.path.dirname(os.path.abspath(__file__))
-data_dir = os.path.join(project_dir, "data")
-problems = Problems(SQL_ENGINE, data_dir)
-
-problem_service = ProblemService(logging, config.JWT_SECRET, problems)
-
 @app.before_request
 def load_user_identity():
     authorization_header = request.headers.get("Authorization")
@@ -59,18 +43,37 @@ def load_user_identity():
             return
         extra = {
             "email": g.user["email"],
-            "role": g.user["role"],
+            "role": "ta",# g.user["role"],
+            "uid": g.user["id"]
         }
-        app.logger.info("User %s authenticated", g.user["email"], extra=extra)
+        app.logger.info("User %s authenticated, %s %s", g.user["email"], g.user["id"], g.user["role"], extra=extra)
     else:
-        g.user = None
+        g.user = None 
+
+connection_string = (
+    f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
+    f"@{config.MYSQL_HOST}/{config.MYSQL_DB}"
+)
+SQL_ENGINE = create_engine(connection_string)
+profiles = Profiles(SQL_ENGINE)
+# print(wg.generate_wireguard_config(profiles.add_profile()))
+# print("\n\n\n\n\n\n\n")
+users = Users(SQL_ENGINE)
+auth_service = AuthService(logging, config.JWT_SECRET, users)
+project_dir = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.join(project_dir, "data")
+problems = Problems(SQL_ENGINE, data_dir)
+
+problem_service = ProblemService(logging, config.JWT_SECRET, problems)
 
 
 
-from controllers import auth_bp, problem_bp # pylint: disable=wrong-import-position, unused-import, cyclic-import
+
+
+from controllers import auth_bp, problem_bp, wg_bp # pylint: disable=wrong-import-position, unused-import, cyclic-import
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(problem_bp, url_prefix="/problems")
+app.register_blueprint(wg_bp, url_prefix="/wg")
 if __name__ == "__main__":
-    app.run(debug=True)
-    
+    app.run(debug=True, port=5000)

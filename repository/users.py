@@ -20,6 +20,7 @@ class Users:
     def query_user(self, email):
         with managed_session(self.session_factory) as session:
             user = session.query(db.User).filter_by(email=email).first()
+            print(email)
             if user:
                 user_data = {
                     "id": user.id,

@@ -16,6 +16,7 @@ class Submissions:
                 submission_score=submission_score,
             )
             session.add(submission)
+            session.commit()
             return submission.id
 
     def query_submission(self, user_id, problem_id):

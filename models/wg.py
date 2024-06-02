@@ -36,9 +36,9 @@ def generate_wireguard_config(profile_id):
     """Generates WireGuard configuration for both server and peer."""
     server_private_key, server_public_key = generate_wireguard_keys()
     peer_private_key, peer_public_key = generate_wireguard_keys()
-
+    print(f'IN generate wg profile_id: {profile_id}\n\n')
     wg_interface_name = f"wg{profile_id}"
-    server_listen_port = str(20000 + profile_id)
+    server_listen_port = str(20000 + int(profile_id))
     server_interface_ip = "10.64.89.254/24"
     peer_allowed_ips = "10.89.64.0/24, 10.64.89.1/32"
 
