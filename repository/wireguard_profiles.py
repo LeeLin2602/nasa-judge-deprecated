@@ -10,20 +10,17 @@ class Profiles:
         self.session_factory = scoped_session(sessionmaker(bind=self.sql_engine))
 
     def add_profile(self, user_id):
-        Id = 0
         with managed_session(self.session_factory) as session:
             new_profile = db.WireguardProfile(
                 user_id=user_id,
                 is_valid=True
             )
             print(f'New profile id: {new_profile.id}')
-            
-                
             session.add(new_profile)
             session.commit()
-            Id = new_profile.id
+            profile_id = new_profile.id
         try:
-            peer_config = wg.generate_wireguard_config(Id)
+            peer_config = wg.generate_wireguard_config(profile_id)
             print(peer_config)
         except Exception as e:
             session.rollback()
@@ -38,7 +35,7 @@ class Profiles:
             if profile:
                 profile.valid = False
             session.commit()
-            
+
     def query_profile(self, profile_id):
         with managed_session(self.session_factory) as session:
             profile = session.query(db.WireguardProfile).filter_by(id=profile_id).first()
