@@ -1,5 +1,4 @@
-from datetime import datetime  # Standard imports first
-from flask import jsonify, request, g, Blueprint  # Third-party imports
+from flask import jsonify, g, Blueprint  # Third-party imports
 
 wg_bp = Blueprint('wg', __name__)
 

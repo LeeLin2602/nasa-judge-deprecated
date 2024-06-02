@@ -41,14 +41,8 @@ def load_user_identity():
         g.user = auth_service.authenticate_token(token)
         if g.user is None:
             return
-        extra = {
-            "email": g.user["email"],
-            "role": "ta",# g.user["role"],
-            "uid": g.user["id"]
-        }
-        app.logger.info("User %s authenticated, %s %s", g.user["email"], g.user["id"], g.user["role"], extra=extra)
     else:
-        g.user = None 
+        g.user = None
 
 connection_string = (
     f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PSWD}"
